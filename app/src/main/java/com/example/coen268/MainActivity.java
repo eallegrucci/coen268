@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,14 +34,14 @@ public class MainActivity extends AppCompatActivity {
         
         Callback<Object> callback = null;
         yelpService.searchRestaurants("Bearer "+ YELP_API_KEY, "Avocado Toast", "New York")
-                .enqueue(new Callback<Object>() {
+                .enqueue(new Callback<YelpSearchResults>() {
                     @Override
-                    public void onResponse(Call<Object> call, Response<Object> response) {
+                    public void onResponse(Call<YelpSearchResults> call, Response<YelpSearchResults> response) {
                         Log.i(TAG, "Response: " + response);
                     }
 
                     @Override
-                    public void onFailure(Call<Object> call, Throwable t) {
+                    public void onFailure(Call<YelpSearchResults> call, Throwable t) {
                         Log.i(TAG, "Failure: " + t);
                     }
                 });
