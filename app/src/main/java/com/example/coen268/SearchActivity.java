@@ -1,9 +1,12 @@
 package com.example.coen268;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
@@ -14,6 +17,12 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SearchActivity extends AppCompatActivity {
+    private RecyclerView rvRestaurants;
+    private RestaurantsAdapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+
+    ArrayList<YelpRestaurant> yelpRestaurants;
+
 
     private static final String BASE_URL = "https://api.yelp.com/v3/";
     private static final String TAG = "MainActivity";
@@ -27,7 +36,15 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        ArrayList<YelpRestaurant> yelpRestaurants;
+        yelpRestaurants = new ArrayList<>();
+
+        rvRestaurants = findViewById(R.id.rvRestaurants);
+        rvRestaurants.setHasFixedSize(true);
+
+        mAdapter = new RestaurantsAdapter(this, yelpRestaurants);
+        mLayoutManager = new LinearLayoutManager(this);
+        rvRestaurants.setAdapter(mAdapter);
+        rvRestaurants.setLayoutManager(mLayoutManager);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -42,6 +59,13 @@ public class SearchActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<YelpSearchResults> call, Response<YelpSearchResults> response) {
                         Log.i(TAG, "Response: " + response);
+                        YelpSearchResults body = response.body();
+                        if (body == null) {
+                            Log.w(TAG, "Did not receive valid response from Yelp API... exiting");
+                            return;
+                        }
+                        yelpRestaurants.addAll(body.restaurants);
+                        mAdapter.notifyDataSetChanged();
                     }
 
                     @Override
