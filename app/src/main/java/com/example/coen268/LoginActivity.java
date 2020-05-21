@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -17,6 +20,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,17 +31,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final String TAG = LoginActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 1;
 
+    private String accountType = Constants.ACCOUNT_TYPE_CUSTOMER;
+
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+
+    private TextInputLayout emailTextField;
+    private TextInputLayout passwordTextField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+//        accountType = getIntent().getStringExtra(Constants.KEY_ACCOUNT_TYPE);
+
         // TODO: Remove this line when a logout button is added
         // Uncomment the line below and run the application to remove an active session
-        // FirebaseAuth.getInstance().signOut();
+         FirebaseAuth.getInstance().signOut();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -55,6 +66,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         SignInButton signInButton = findViewById(R.id.googleSignInButton);
         signInButton.setSize(SignInButton.SIZE_WIDE);
         signInButton.setOnClickListener(this);
+
+        emailTextField = findViewById(R.id.username);
+        passwordTextField = findViewById(R.id.password);
+
+        Button emailPwdbutton = findViewById(R.id.emailPwdSignInButton);
+        emailPwdbutton.setOnClickListener(this);
     }
 
     @Override
@@ -69,16 +86,60 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.googleSignInButton:
-                signIn();
+                signInWithGoogle();
+                break;
+            case R.id.emailPwdSignInButton:
+                signInWithEmailAndPassword();
                 break;
             case R.id.createAccountButton:
+                createAccount();
                 break;
         }
     }
 
-    private void signIn() {
+    private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void signInWithEmailAndPassword() {
+        String email = emailTextField.getEditText().getText().toString();
+        String password = passwordTextField.getEditText().getText().toString();
+        if (email.isEmpty()) {
+            emailTextField.setError("Email cannot be empty.");
+            return;
+        } else {
+            emailTextField.setError(null);
+        }
+        if (password.isEmpty()) {
+            passwordTextField.setError("Password cannot be empty.");
+            return;
+        } else {
+            passwordTextField.setError(null);
+        }
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Snackbar.make(findViewById(R.id.emailPwdSignInButton), "Authentication Failed.", Snackbar.LENGTH_LONG).show();
+                            updateUI(null);
+                        }
+                    }
+                });
+    }
+
+    private void createAccount() {
+        Intent intent = new Intent(this, CreateAccountActivity.class);
+        intent.putExtra(Constants.KEY_ACCOUNT_TYPE, accountType);
+        startActivity(intent);
     }
 
     @Override
@@ -128,7 +189,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.googleSignInButton), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(R.id.googleSignInButton), "Authentication Failed.", Snackbar.LENGTH_LONG).show();
                             updateUI(null);
                         }
                     }
@@ -136,9 +197,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void updateUI(FirebaseUser user) {
-        if (user == null) {
-
-        } else {
+        if (user != null) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
