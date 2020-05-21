@@ -5,10 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -27,17 +30,18 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
     public static class restaurantViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImage;
-        public TextView mName, mAddress, mRating, mDistance, mPrice, mReviewCount;
+        public TextView mName, mAddress, mDistance, mPrice, mReviewCount;
+        public RatingBar mRating;
 
         public restaurantViewHolder(View itemView, final OnItemClickListener listener) {
             super(itemView);
-//            mImage = itemView.findViewById(R.id.tvImage);
-            mName = itemView.findViewById(R.id.tvName);
-//            mAddress = itemView.findViewById(R.id.tvAddress);
-//            mRating = itemView.findViewById(R.id.tvRating);
-//            mDistance = itemView.findViewById(R.id.tvDistance);
-//            mPrice = itemView.findViewById(R.id.tvPrice);
-//            mReviewCount = itemView.findViewById(R.id.tvReviewCount);
+            mImage = (ImageView) itemView.findViewById(R.id.rImage);
+            mName = (TextView) itemView.findViewById(R.id.tvName);
+            mAddress = (TextView) itemView.findViewById(R.id.tvAddress);
+            mRating = (RatingBar) itemView.findViewById(R.id.ratingBar);
+            mDistance = (TextView) itemView.findViewById(R.id.tvDistance);
+            mPrice = (TextView) itemView.findViewById(R.id.tvPrice);
+            mReviewCount = (TextView) itemView.findViewById(R.id.tvNumRev);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -53,13 +57,13 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         }
 
         public void bind(YelpRestaurant r) {
-//            mImage.setImageResource(r.image_url);
             mName.setText(r.name);
-            //mAddress.setText(r.location);
-//            mRating.setText((int) r.rating);
-//            mDistance.setText(r.distanceInMiles());
-//            mPrice.setText(r.price);
-//            mReviewCount.setText(r.review_count);
+            mAddress.setText(r.location.address);
+            mRating.setRating((float) r.rating);
+            mDistance.setText(r.distanceInMiles() + "");
+            mPrice.setText(r.price+ "");
+            mReviewCount.setText(r.review_count + " Reviews");
+            //Glide.with(itemView).load(r.image_url).into(mImage);
         }
     }
 
