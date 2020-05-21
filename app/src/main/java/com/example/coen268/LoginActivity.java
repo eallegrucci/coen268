@@ -67,11 +67,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         signInButton.setSize(SignInButton.SIZE_WIDE);
         signInButton.setOnClickListener(this);
 
-        emailTextField = findViewById(R.id.username);
+        emailTextField = findViewById(R.id.email);
         passwordTextField = findViewById(R.id.password);
 
-        Button emailPwdbutton = findViewById(R.id.emailPwdSignInButton);
-        emailPwdbutton.setOnClickListener(this);
+        Button emailPwdButton = findViewById(R.id.emailPwdSignInButton);
+        emailPwdButton.setOnClickListener(this);
+
+        Button createAccountButton = findViewById(R.id.createAccountButton);
+        createAccountButton.setOnClickListener(this);
     }
 
     @Override
@@ -106,13 +109,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String email = emailTextField.getEditText().getText().toString();
         String password = passwordTextField.getEditText().getText().toString();
         if (email.isEmpty()) {
-            emailTextField.setError("Email cannot be empty.");
+            emailTextField.setError("Required.");
             return;
         } else {
             emailTextField.setError(null);
         }
         if (password.isEmpty()) {
-            passwordTextField.setError("Password cannot be empty.");
+            passwordTextField.setError("Required.");
             return;
         } else {
             passwordTextField.setError(null);

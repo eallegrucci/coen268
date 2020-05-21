@@ -1,62 +1,112 @@
 package com.example.coen268;
 
+import android.content.Context;
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CreateCustomerFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
-public class CreateCustomerFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class CreateCustomerFragment extends Fragment implements View.OnClickListener {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private OnCreateAccountListener listener;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CreateCustomerFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CreateCustomerFragment newInstance(String param1, String param2) {
-        CreateCustomerFragment fragment = new CreateCustomerFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-    public CreateCustomerFragment() {
-        // Required empty public constructor
-    }
+    private Button createButton;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private TextInputLayout nameTextField;
+    private TextInputLayout emailTextField;
+    private TextInputLayout passwordTextField;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_create_customer, container, false);
+        View view = inflater.inflate(R.layout.fragment_create_customer, container, false);
+        createButton = view.findViewById(R.id.create);
+        createButton.setOnClickListener(this);
+        nameTextField = view.findViewById(R.id.name);
+        emailTextField = view.findViewById(R.id.email);
+        passwordTextField = view.findViewById(R.id.password);
+        return view;
     }
+
+    @Override
+    public void onClick(View v) {
+        String displayName = nameTextField.getEditText().getText().toString();
+        String email = emailTextField.getEditText().getText().toString();
+        String password = passwordTextField.getEditText().getText().toString();
+
+        if (displayName.isEmpty()) {
+            nameTextField.setError("Required.");
+            return;
+        } else {
+            nameTextField.setError(null);
+        }
+
+        if (email.isEmpty()) {
+            emailTextField.setError("Required.");
+            return;
+        } else {
+            emailTextField.setError(null);
+        }
+
+        if (password.isEmpty()) {
+            passwordTextField.setError("Required.");
+            return;
+        } else if (password.length() < 6) {
+            passwordTextField.setError("Password must be at least 6 characters.");
+            return;
+        } else {
+            passwordTextField.setError(null);
+        }
+
+        listener.createAccount(new Customer(displayName, email, password));
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnCreateAccountListener) {
+            listener = (OnCreateAccountListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnCreateAccountListener");
+        }
+    }
+
+    public interface OnCreateAccountListener {
+        void createAccount(Customer customer);
+    }
+
+    public class Customer {
+        private String displayName;
+        private String email;
+        private String password;
+
+        public Customer(String displayName, String email, String password) {
+            this.displayName = displayName;
+            this.email = email;
+            this.password = password;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+    }
+
+
 }
