@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
+import com.example.coen268.fragment.CreateBusinessFragment;
+import com.example.coen268.fragment.CreateCustomerFragment;
+import com.example.coen268.user.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
@@ -15,7 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
-public class CreateAccountActivity extends AppCompatActivity implements CreateCustomerFragment.OnCreateAccountListener {
+public class CreateAccountActivity extends AppCompatActivity implements User.OnCreateAccountListener {
     private static final String TAG = CreateAccountActivity.class.getSimpleName();
 
     private FirebaseAuth mAuth;
@@ -38,21 +40,21 @@ public class CreateAccountActivity extends AppCompatActivity implements CreateCu
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new CreateCustomerFragment()).commit();
                 break;
             case Constants.ACCOUNT_TYPE_BUSINESS:
-                // TODO: Add create account fragment for business owners
+                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new CreateBusinessFragment()).commit();
                 break;
         }
     }
 
     @Override
-    public void createAccount(final CreateCustomerFragment.Customer customer) {
-        mAuth.createUserWithEmailAndPassword(customer.getEmail(), customer.getPassword())
+    public void createAccount(final User user) {
+        mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            updateCustomerProfile(customer);
+                            updateProfile(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -63,19 +65,19 @@ public class CreateAccountActivity extends AppCompatActivity implements CreateCu
                 });
     }
 
-    private void updateCustomerProfile(final CreateCustomerFragment.Customer customer) {
-        final FirebaseUser user = mAuth.getCurrentUser();
+    private void updateProfile(final User user) {
+        final FirebaseUser firebaseUser = mAuth.getCurrentUser();
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(customer.getDisplayName())
+                .setDisplayName(user.getDisplayName())
                 .build();
 
-        user.updateProfile(profileUpdates)
+        firebaseUser.updateProfile(profileUpdates)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "User profile updated.");
-                            updateUI(user);
+                            updateUI(firebaseUser);
                         }
                     }
                 });
@@ -88,4 +90,5 @@ public class CreateAccountActivity extends AppCompatActivity implements CreateCu
             // TODO: Go to main activity
         }
     }
+
 }

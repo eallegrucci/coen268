@@ -1,4 +1,4 @@
-package com.example.coen268;
+package com.example.coen268.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,12 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.coen268.R;
+import com.example.coen268.user.Customer;
+import com.example.coen268.user.User;
 import com.google.android.material.textfield.TextInputLayout;
 
 
 public class CreateCustomerFragment extends Fragment implements View.OnClickListener {
 
-    private OnCreateAccountListener listener;
+    private User.OnCreateAccountListener listener;
 
     private Button createButton;
 
@@ -66,47 +69,22 @@ public class CreateCustomerFragment extends Fragment implements View.OnClickList
             passwordTextField.setError(null);
         }
 
-        listener.createAccount(new Customer(displayName, email, password));
+        listener.createAccount(new Customer.CustomerBuilder()
+                .setDisplayName(displayName)
+                .setEmail(email)
+                .setPassword(password)
+                .build()
+        );
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnCreateAccountListener) {
-            listener = (OnCreateAccountListener) context;
+        if (context instanceof User.OnCreateAccountListener) {
+            listener = (User.OnCreateAccountListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnCreateAccountListener");
         }
     }
-
-    public interface OnCreateAccountListener {
-        void createAccount(Customer customer);
-    }
-
-    public class Customer {
-        private String displayName;
-        private String email;
-        private String password;
-
-        public Customer(String displayName, String email, String password) {
-            this.displayName = displayName;
-            this.email = email;
-            this.password = password;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-    }
-
-
 }

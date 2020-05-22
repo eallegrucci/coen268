@@ -44,6 +44,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // Get account type from Start activity
 //        accountType = getIntent().getStringExtra(Constants.KEY_ACCOUNT_TYPE);
 
         // TODO: Remove this line when a logout button is added
