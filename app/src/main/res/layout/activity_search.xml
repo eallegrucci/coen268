@@ -15,7 +15,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="30dp"
         android:background="@drawable/white_border"
         android:elevation="10dp"
         app:layout_constraintBottom_toTopOf="@+id/rvRestaurants"
@@ -62,7 +62,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvRestaurants"
         android:layout_width="match_parent"
-        android:layout_height="600dp"
+        android:layout_height="570dp"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
