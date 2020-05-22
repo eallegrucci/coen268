@@ -45,11 +45,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
         // Get account type from Start activity
-//        accountType = getIntent().getStringExtra(Constants.KEY_ACCOUNT_TYPE);
-
-        // TODO: Remove this line when a logout button is added
-        // Uncomment the line below and run the application to remove an active session
-         FirebaseAuth.getInstance().signOut();
+        accountType = getIntent().getStringExtra(Constants.KEY_ACCOUNT_TYPE);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -201,7 +197,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void updateUI(FirebaseUser user) {
-        if (user != null) {
+        if (user == null) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }

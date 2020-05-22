@@ -3,6 +3,7 @@ package com.example.coen268;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -87,7 +88,8 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
         if (user == null) {
             // Stay on page.
         } else {
-            // TODO: Go to main activity
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         }
     }
 
