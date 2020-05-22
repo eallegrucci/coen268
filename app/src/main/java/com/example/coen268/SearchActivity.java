@@ -5,8 +5,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -22,7 +27,8 @@ public class SearchActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
 
     ArrayList<YelpRestaurant> yelpRestaurants;
-
+    private EditText mSearchText;
+    private EditText mLocationText;
 
     private static final String BASE_URL = "https://api.yelp.com/v3/";
     private static final String TAG = "MainActivity";
@@ -38,6 +44,8 @@ public class SearchActivity extends AppCompatActivity {
 
         yelpRestaurants = new ArrayList<>();
 
+        initSearch();
+
         rvRestaurants = findViewById(R.id.rvRestaurants);
         rvRestaurants.setHasFixedSize(true);
 
@@ -45,6 +53,45 @@ public class SearchActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         rvRestaurants.setAdapter(mAdapter);
         rvRestaurants.setLayoutManager(mLayoutManager);
+    }
+
+    private void initSearch() {
+        mSearchText = (EditText) findViewById(R.id.restaurantSearch);
+        mSearchText.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        mSearchText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        mLocationText = (EditText) findViewById(R.id.locationSearch);
+        mLocationText.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        mLocationText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+
+        mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_DONE ||
+                        event.getAction() == KeyEvent.ACTION_DOWN ||
+                        event.getAction() == KeyEvent.KEYCODE_ENTER) {
+                    searchRestaurant();
+                }
+                return false;
+            }
+        });
+        mLocationText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_DONE ||
+                        event.getAction() == KeyEvent.ACTION_DOWN ||
+                        event.getAction() == KeyEvent.KEYCODE_ENTER) {
+                    searchRestaurant();
+                }
+                return false;
+            }
+        });
+    }
+
+    private void searchRestaurant() {
+        String searchEntry = mSearchText.getText().toString();
+        String location = mLocationText.getText().toString();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -53,8 +100,7 @@ public class SearchActivity extends AppCompatActivity {
 
         YelpService yelpService = retrofit.create(YelpService.class);
 
-        Callback<Object> callback = null;
-        yelpService.searchRestaurants("Bearer "+ YELP_API_KEY, "Avocado Toast", "New York")
+        yelpService.searchRestaurants("Bearer "+ YELP_API_KEY, searchEntry, location)
                 .enqueue(new Callback<YelpSearchResults>() {
                     @Override
                     public void onResponse(Call<YelpSearchResults> call, Response<YelpSearchResults> response) {
