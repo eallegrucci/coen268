@@ -4,13 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -53,6 +53,26 @@ public class SearchActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         rvRestaurants.setAdapter(mAdapter);
         rvRestaurants.setLayoutManager(mLayoutManager);
+
+        mAdapter.setOnItemClickListener(new RestaurantsAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                //TODO: store and put all the info to the intent
+                String im_url = yelpRestaurants.get(position).image_url;
+                String n = yelpRestaurants.get(position).name;
+//                String im_url = yelpRestaurants.get(position).image_url;
+//                String im_url = yelpRestaurants.get(position).image_url;
+//                String im_url = yelpRestaurants.get(position).image_url;
+//                String im_url = yelpRestaurants.get(position).image_url;
+//                String im_url = yelpRestaurants.get(position).image_url;
+//                String im_url = yelpRestaurants.get(position).image_url;
+//                String im_url = yelpRestaurants.get(position).image_url;
+                Intent i = new Intent(SearchActivity.this, RestaurantActivity.class);
+                i.putExtra("im_url", im_url);
+                i.putExtra("name", n);
+                startActivity(i);
+            }
+        });
     }
 
     private void initSearch() {

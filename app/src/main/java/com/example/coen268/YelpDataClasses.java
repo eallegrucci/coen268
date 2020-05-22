@@ -11,6 +11,7 @@ class YelpSearchResults {
 
 class YelpRestaurant {
     String name;
+    String display_phone;
     double rating;
     String price;
     int review_count;
@@ -18,6 +19,7 @@ class YelpRestaurant {
     double distance;
     String image_url;
     List<YelpCategory> categories;
+    Hours hours;
 
     String distanceInMiles() {
         double milesPerMeter = .000621371;
@@ -37,4 +39,15 @@ class YelpLocation {
 class YelpCategory {
     String alias;
     String title;
+}
+
+class Hours  {
+    List<Time> open;
+}
+
+class Time {
+    boolean is_overnight;
+    String start;
+    String end;
+    int day;
 }
