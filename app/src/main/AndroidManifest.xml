@@ -14,7 +14,8 @@
         <activity android:name=".RestaurantActivity"
             android:parentActivityName=".SearchActivity">
         </activity>
-        <activity android:name=".SearchActivity" />
+        <activity android:name=".SearchActivity"
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
