@@ -57,22 +57,35 @@ public class SearchActivity extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new RestaurantsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                //TODO: store and put all the info to the intent
-                String im_url = yelpRestaurants.get(position).image_url;
-                String n = yelpRestaurants.get(position).name;
-//                String im_url = yelpRestaurants.get(position).image_url;
-//                String im_url = yelpRestaurants.get(position).image_url;
-//                String im_url = yelpRestaurants.get(position).image_url;
-//                String im_url = yelpRestaurants.get(position).image_url;
-//                String im_url = yelpRestaurants.get(position).image_url;
-//                String im_url = yelpRestaurants.get(position).image_url;
-//                String im_url = yelpRestaurants.get(position).image_url;
                 Intent i = new Intent(SearchActivity.this, RestaurantActivity.class);
-                i.putExtra("im_url", im_url);
-                i.putExtra("name", n);
+                putInfo(position, i);
                 startActivity(i);
             }
         });
+    }
+
+    private void putInfo(int position, Intent i) {
+        String image = yelpRestaurants.get(position).image_url;
+        String n = yelpRestaurants.get(position).name;
+        String phone = yelpRestaurants.get(position).display_phone;
+        String mPrice = yelpRestaurants.get(position).price;
+        String dist = yelpRestaurants.get(position).distanceInMiles();
+        double rat = yelpRestaurants.get(position).rating;
+        double revCount = yelpRestaurants.get(position).review_count;
+        String street = yelpRestaurants.get(position).location.address;
+        String address = yelpRestaurants.get(position).location.city + ", " +
+                yelpRestaurants.get(position).location.state + " " +
+                yelpRestaurants.get(position).location.zip_code;
+        //String hours = yelpRestaurants.get(position).hours.open;
+        i.putExtra("image", image);
+        i.putExtra("name", n);
+        i.putExtra("phone", phone);
+        i.putExtra("price", mPrice);
+        i.putExtra("distance", dist);
+        i.putExtra("rating", rat);
+        i.putExtra("reviewCount", revCount);
+        i.putExtra("street", street);
+        i.putExtra("address", address);
     }
 
     private void initSearch() {

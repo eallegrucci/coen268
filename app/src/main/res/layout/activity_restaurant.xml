@@ -116,27 +116,26 @@
         tools:text="(123) 456-7981" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/openSpots"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="49dp"
+        android:layout_marginBottom="20dp"
         android:text="Open Spots"
         app:layout_constraintBottom_toTopOf="@+id/reserveButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantNumOpenSpots"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/restaurantNumOpenSpots"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="210dp"
+        android:layout_marginTop="236dp"
         android:text="TextView"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restaurantImage"
         tools:text="8" />
@@ -162,5 +161,16 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/reserveButton" />
+
+    <TextView
+        android:id="@+id/restaurantHours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="8dp"
+        android:text="Hours: "
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/restaurantCityStateZip" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
