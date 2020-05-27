@@ -41,7 +41,6 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-//        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         yelpRestaurants = new ArrayList<>();
 
@@ -77,7 +76,6 @@ public class SearchActivity extends AppCompatActivity {
         String address = yelpRestaurants.get(position).location.city + ", " +
                 yelpRestaurants.get(position).location.state + " " +
                 yelpRestaurants.get(position).location.zip_code;
-        //String hours = yelpRestaurants.get(position).hours.open;
         i.putExtra("image", image);
         i.putExtra("name", n);
         i.putExtra("phone", phone);

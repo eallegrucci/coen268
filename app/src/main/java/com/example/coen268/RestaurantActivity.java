@@ -11,14 +11,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 public class RestaurantActivity extends AppCompatActivity {
-    private String image_url, name, phone, price, street, address, distance;
+    private String image_url, name, phone, price, street, address, distance, hours;
     private double rating, reviewCount;
 
     Button reserveSpotButton, returnHomeButton;
-    TextView tvName, tvCount, tvPrice, tvDistance, tvPhone, tvStreet, tvAddress, tvHours;
+    TextView tvName, tvCount, tvPrice, tvDistance, tvPhone, tvStreet, tvAddress;
     ImageView ivImage;
     RatingBar mRatingBar;
 
@@ -41,7 +40,6 @@ public class RestaurantActivity extends AppCompatActivity {
         tvPhone = (TextView) findViewById(R.id.restaurantPhoneNumber);
         tvStreet = (TextView) findViewById(R.id.restaurantStreetAddress);
         tvAddress = (TextView) findViewById(R.id.restaurantCityStateZip);
-        tvHours = (TextView) findViewById(R.id.restaurantHours);
 
         ivImage = (ImageView) findViewById(R.id.restaurantImage);
 
@@ -60,6 +58,7 @@ public class RestaurantActivity extends AppCompatActivity {
         reviewCount = i.getDoubleExtra("reviewCount", 0);
         street = i.getStringExtra("street");
         address = i.getStringExtra("address");
+        hours = i.getStringExtra("hours");
     }
 
     private void setViews() {
