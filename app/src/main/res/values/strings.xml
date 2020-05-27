@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">coen268</string>
+    <string name="server_client_id">1067644233325-vorct2aqrg262vs9o070n5avkqghjkb0.apps.googleusercontent.com</string>
+    <string name="action_customer">CUSTOMER</string>
+    <string name="action_business">BUSINESS</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_confirm_password">Confirm Password</string>
+    <string name="prompt_name">Name</string>
+    <string name="prompt_business">Business</string>
+    <string name="prompt_street">Street Address</string>
+    <string name="prompt_city">City</string>
+    <string name="prompt_zip">ZIP</string>
+    <string name="action_sign_in">SIGN IN</string>
+    <string name="action_register">CREATE ACCOUNT</string>
+    <string name="action_next">NEXT</string>
+    <string name="action_finish">FINISH</string>
+    <string name="text_or">OR</string>
 </resources>
