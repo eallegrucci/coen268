@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.example.coen268.fragment.CreateBusinessFragment;
-import com.example.coen268.fragment.CreateCustomerFragment;
+import com.example.coen268.fragment.CreateAccountAddressFragment;
+import com.example.coen268.fragment.CreateAccountCredentialsFragment;
 import com.example.coen268.user.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,14 +36,23 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
     }
 
     private void initializeDisplay() {
-        switch (accountType) {
-            case Constants.ACCOUNT_TYPE_CUSTOMER:
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new CreateCustomerFragment()).commit();
-                break;
-            case Constants.ACCOUNT_TYPE_BUSINESS:
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new CreateBusinessFragment()).commit();
-                break;
-        }
+        CreateAccountCredentialsFragment accountCredentialsFragment = new CreateAccountCredentialsFragment();
+
+        Bundle args = new Bundle();
+        args.putString(Constants.KEY_ACCOUNT_TYPE, accountType);
+        accountCredentialsFragment.setArguments(args);
+
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, accountCredentialsFragment).commit();
+    }
+
+    public void onCredentialsCompleted(User user) {
+        CreateAccountAddressFragment accountAddressFragment = new CreateAccountAddressFragment();
+
+        Bundle args = new Bundle();
+        args.putParcelable(Constants.KEY_USER, user);
+        accountAddressFragment.setArguments(args);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, accountAddressFragment).addToBackStack(null).commit();
     }
 
     @Override
