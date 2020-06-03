@@ -1,30 +1,51 @@
 package com.example.coen268;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-    Button searchActivity;
+public class MainActivity extends AppCompatActivity {
+
+    BottomNavigationView navBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        searchActivity = findViewById(R.id.searchActivity);
-        searchActivity.setOnClickListener(this);
+        navBar = findViewById(R.id.bottomNavigation);
+        navBar.setOnNavigationItemSelectedListener(navListener);
+
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                new SearchFragment()).addToBackStack(null).commit();
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.searchActivity) {
-            Intent i = new Intent(MainActivity.this, SearchActivity.class);
-            startActivity(i);
-        }
-    }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    Fragment selectedFrag = new SearchActivity();
+                    switch (item.getItemId()) {
+                        case R.id.search_fragment:
+                            selectedFrag = new SearchFragment();
+                            break;
+//                        case R.id.AccountFragment:
+//                            selectedFrag = new SearchActivity();
+//                            break;
+//                        case R.id.ReservationFragment:
+//                            selectedFrag = new SearchActivity();
+//                            break;
+//                    }
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                            selectedFrag).addToBackStack(null).commit();
+                    return true;
+                }
+            };
 }

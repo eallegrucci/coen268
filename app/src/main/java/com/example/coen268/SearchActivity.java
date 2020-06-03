@@ -1,6 +1,7 @@
 package com.example.coen268;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,6 +10,9 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,7 +25,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends Fragment {
     private RecyclerView rvRestaurants;
     private RestaurantsAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -37,33 +41,33 @@ public class SearchActivity extends AppCompatActivity {
     private static final String YELP_API_KEY = "QvovY7ARu_g-PbylLUKjbNTaNRYScXpmYZYsJQ3kXrYiXcLDRoDw9BKON_MW8oYWwh5EQObD6nDoZ_fagp5IN3eTJe-ITcjtUnfvILCKixiIr8keyjDd-zfoVoXCXnYx";
     private static final String YELP_CLIENT_ID = "iR8bLXS3k8VWr71rfHcIag";
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_search, container, false);
 
         yelpRestaurants = new ArrayList<>();
 
-        initSearch();
+        initSearch(view);
 
-        rvRestaurants = findViewById(R.id.rvRestaurants);
+        rvRestaurants = view.findViewById(R.id.rvRestaurants);
         rvRestaurants.setHasFixedSize(true);
 
-        mAdapter = new RestaurantsAdapter(this, yelpRestaurants);
-        mLayoutManager = new LinearLayoutManager(this);
+        mAdapter = new RestaurantsAdapter(getContext(), yelpRestaurants);
+        mLayoutManager = new LinearLayoutManager(getContext());
         rvRestaurants.setAdapter(mAdapter);
         rvRestaurants.setLayoutManager(mLayoutManager);
 
         mAdapter.setOnItemClickListener(new RestaurantsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Intent i = new Intent(SearchActivity.this, RestaurantActivity.class);
+                Intent i = new Intent(getContext(), RestaurantActivity.class);
                 putInfo(position, i);
                 startActivity(i);
             }
         });
+
+        return view;
     }
 
     private void putInfo(int position, Intent i) {
@@ -89,11 +93,11 @@ public class SearchActivity extends AppCompatActivity {
         i.putExtra("address", address);
     }
 
-    private void initSearch() {
-        mSearchText = (EditText) findViewById(R.id.restaurantSearch);
+    private void initSearch(View v) {
+        mSearchText = (EditText) v.findViewById(R.id.restaurantSearch);
         mSearchText.setRawInputType(InputType.TYPE_CLASS_TEXT);
         mSearchText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-        mLocationText = (EditText) findViewById(R.id.locationSearch);
+        mLocationText = (EditText) v.findViewById(R.id.locationSearch);
         mLocationText.setRawInputType(InputType.TYPE_CLASS_TEXT);
         mLocationText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 
