@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                new SearchFragment()).addToBackStack(null).commit();
+                new SearchActivity()).addToBackStack(null).commit();
     }
 
 
@@ -34,18 +35,24 @@ public class MainActivity extends AppCompatActivity {
                     Fragment selectedFrag = new SearchActivity();
                     switch (item.getItemId()) {
                         case R.id.search_fragment:
-                            selectedFrag = new SearchFragment();
+                            Log.i("onNavigationItemSelected", "search fragment selected");
+                            selectedFrag = new SearchActivity();
                             break;
-//                        case R.id.AccountFragment:
-//                            selectedFrag = new SearchActivity();
-//                            break;
-//                        case R.id.ReservationFragment:
-//                            selectedFrag = new SearchActivity();
-//                            break;
-//                    }
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                            selectedFrag).addToBackStack(null).commit();
-                    return true;
+                        case R.id.account_fragment:
+                            Log.i("onNavigationItemSelected", "account fragment selected");
+                            selectedFrag = new SearchActivity();
+                            break;
+                        case R.id.reservation_fragment:
+                            Log.i("onNavigationItemSelected", "reservation fragment selected");
+                            selectedFrag = new SearchActivity();
+                            break;
+                    }
+                    if (selectedFrag != null) {
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                                selectedFrag).addToBackStack(null).commit();
+                        return true;
+                    }
+                    return false;
                 }
             };
 }
