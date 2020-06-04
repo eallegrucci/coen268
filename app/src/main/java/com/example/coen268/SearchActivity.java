@@ -94,7 +94,7 @@ public class SearchActivity extends Fragment {
     }
 
     private void initSearch(View v) {
-        mSearchText = (EditText) v.findViewById(R.id.restaurantSearch);
+        mSearchText = (EditText) v.findViewById(R.id.businessSearch);
         mSearchText.setRawInputType(InputType.TYPE_CLASS_TEXT);
         mSearchText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         mLocationText = (EditText) v.findViewById(R.id.locationSearch);
