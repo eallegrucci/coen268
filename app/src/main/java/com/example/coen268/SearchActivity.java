@@ -187,6 +187,7 @@ public class SearchActivity extends Fragment implements LocationListener {
                             Log.w(TAG, "Did not receive valid response from Yelp API... exiting");
                             return;
                         }
+                        yelpRestaurants.clear();
                         yelpRestaurants.addAll(body.restaurants);
                         mAdapter.notifyDataSetChanged();
                     }

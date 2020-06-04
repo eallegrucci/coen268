@@ -29,7 +29,7 @@ public class Account extends Fragment {
             @Override
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getContext(), LoginActivity.class);
+                Intent intent = new Intent(getContext(), StartActivity.class);
                 startActivity(intent);
             }
         });
