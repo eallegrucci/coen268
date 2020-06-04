@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/homeItem"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="Home" />
+
+    <item
+        android:id="@+id/myReservationsItem"
+        android:icon="@drawable/ic_myreservations"
+        android:title="Reservations" />
+
+    <item
+        android:id="@+id/accountItem"
+        android:icon="@drawable/ic_accountinfo"
+        android:title="Account" />
+</menu>

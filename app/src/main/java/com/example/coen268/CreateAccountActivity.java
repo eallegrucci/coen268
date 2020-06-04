@@ -101,5 +101,4 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
             startActivity(intent);
         }
     }
-
 }
