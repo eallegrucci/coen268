@@ -27,30 +27,38 @@
             android:layout_height="20dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
             android:src="@drawable/ic_search" />
 
         <EditText
-            android:id="@+id/restaurantSearch"
-            android:layout_width="match_parent"
+            android:id="@+id/businessSearch"
+            android:layout_width="173dp"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/ic_home"
             android:background="@null"
-            android:hint="Enter a Restaurant..."
+            android:hint="Enter a Business..."
             android:imeOptions="actionSearch"
             android:textColor="#000"
             android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/ic_locate"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/businessSearch"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/ic_location_searching" />
 
         <EditText
             android:id="@+id/locationSearch"
             android:layout_width="175dp"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="187dp"
-            android:layout_toRightOf="@id/ic_home"
+            android:layout_toRightOf="@id/ic_locate"
             android:background="@null"
-            android:hint="Enter Location..."
+            android:hint="Enter a Location..."
             android:imeOptions="actionSearch"
             android:textColor="#000"
             android:textSize="15sp" />
