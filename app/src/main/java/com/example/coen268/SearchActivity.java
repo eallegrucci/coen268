@@ -1,11 +1,21 @@
 package com.example.coen268;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -16,8 +26,11 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,7 +38,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SearchActivity extends Fragment {
+public class SearchActivity extends Fragment implements LocationListener {
     private RecyclerView rvRestaurants;
     private RestaurantsAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -41,6 +54,15 @@ public class SearchActivity extends Fragment {
     private static final String YELP_API_KEY = "QvovY7ARu_g-PbylLUKjbNTaNRYScXpmYZYsJQ3kXrYiXcLDRoDw9BKON_MW8oYWwh5EQObD6nDoZ_fagp5IN3eTJe-ITcjtUnfvILCKixiIr8keyjDd-zfoVoXCXnYx";
     private static final String YELP_CLIENT_ID = "iR8bLXS3k8VWr71rfHcIag";
 
+    // For user location
+    private LocationManager locationManager;
+    private double longitude, latitude;
+    private Location loc;
+    private boolean mLocationPermissionsGranted = false;
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,6 +71,8 @@ public class SearchActivity extends Fragment {
         yelpRestaurants = new ArrayList<>();
 
         initSearch(view);
+
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         rvRestaurants = view.findViewById(R.id.rvRestaurants);
         rvRestaurants.setHasFixedSize(true);
@@ -66,6 +90,7 @@ public class SearchActivity extends Fragment {
                 startActivity(i);
             }
         });
+
 
         return view;
     }
@@ -104,11 +129,11 @@ public class SearchActivity extends Fragment {
         mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH ||
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                         actionId == EditorInfo.IME_ACTION_DONE ||
                         event.getAction() == KeyEvent.ACTION_DOWN ||
                         event.getAction() == KeyEvent.KEYCODE_ENTER) {
-                    searchRestaurant();
+                    searchBusiness();
                 }
                 return false;
             }
@@ -116,18 +141,18 @@ public class SearchActivity extends Fragment {
         mLocationText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH ||
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                         actionId == EditorInfo.IME_ACTION_DONE ||
                         event.getAction() == KeyEvent.ACTION_DOWN ||
                         event.getAction() == KeyEvent.KEYCODE_ENTER) {
-                    searchRestaurant();
+                    searchBusiness();
                 }
                 return false;
             }
         });
     }
 
-    private void searchRestaurant() {
+    private void searchBusiness() {
         String searchEntry = mSearchText.getText().toString();
         String location = mLocationText.getText().toString();
 
@@ -138,7 +163,29 @@ public class SearchActivity extends Fragment {
 
         YelpService yelpService = retrofit.create(YelpService.class);
 
-        yelpService.searchRestaurants("Bearer "+ YELP_API_KEY, searchEntry, location)
+        if (location.isEmpty()) {
+            getLocationPermission();
+            if (mLocationPermissionsGranted) {
+                onLocationChanged(loc);
+                location = locationToCity();
+                yelpSearch(yelpService, searchEntry, location);
+                Toast.makeText(getContext(), "Using your current location for the search",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Please input a location into the search field",
+                        Toast.LENGTH_SHORT).show();
+            }
+        } else if (searchEntry.isEmpty()) {
+            Log.i("searchBusiness", "search entry is null");
+            Toast.makeText(getContext(), "Please input a business into the search field",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            yelpSearch(yelpService, searchEntry, location);
+        }
+    }
+
+    private void yelpSearch(YelpService yelpService, String searchEntry, String location){
+        yelpService.searchBusinesses("Bearer " + YELP_API_KEY, searchEntry, location)
                 .enqueue(new Callback<YelpSearchResults>() {
                     @Override
                     public void onResponse(Call<YelpSearchResults> call, Response<YelpSearchResults> response) {
@@ -157,5 +204,57 @@ public class SearchActivity extends Fragment {
                         Log.i(TAG, "Failure: " + t);
                     }
                 });
+    }
+
+    private void getLocationPermission() {
+        String[] permissions = {FINE_LOCATION, COURSE_LOCATION};
+
+        if(ContextCompat.checkSelfPermission(getContext(), FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+            if(ContextCompat.checkSelfPermission(getContext(), COURSE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                mLocationPermissionsGranted = true;
+                loc = locationManager.getLastKnownLocation(locationManager.NETWORK_PROVIDER);
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), permissions, LOCATION_PERMISSION_REQUEST_CODE);
+            }
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), permissions, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        longitude = location.getLongitude();
+        latitude = location.getLatitude();
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    private String locationToCity(){
+        String addr = "";
+        try {
+            Geocoder geocoder = new Geocoder(getContext());
+            List<Address> address = null;
+            address = geocoder.getFromLocation(latitude, longitude, 1);
+            addr = address.get(0).getAddressLine(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return addr;
     }
 }

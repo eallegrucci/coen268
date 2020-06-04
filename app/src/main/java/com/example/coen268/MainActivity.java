@@ -52,33 +52,4 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 new SearchActivity()).addToBackStack(null).commit();
     }
-//
-//
-//    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
-//            new BottomNavigationView.OnNavigationItemSelectedListener() {
-//                @Override
-//                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//                    Fragment selectedFrag = new SearchActivity();
-//                    switch (item.getItemId()) {
-//                        case R.id.search_fragment:
-//                            Log.i("onNavigationItemSelected", "search fragment selected");
-//                            selectedFrag = new SearchActivity();
-//                            break;
-//                        case R.id.account_fragment:
-//                            Log.i("onNavigationItemSelected", "account fragment selected");
-//                            selectedFrag = new SearchActivity();
-//                            break;
-//                        case R.id.reservation_fragment:
-//                            Log.i("onNavigationItemSelected", "reservation fragment selected");
-//                            selectedFrag = new SearchActivity();
-//                            break;
-//                    }
-//                    if (selectedFrag != null) {
-//                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-//                                selectedFrag).addToBackStack(null).commit();
-//                        return true;
-//                    }
-//                    return false;
-//                }
-//            };
 }
