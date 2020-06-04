@@ -10,6 +10,7 @@ class YelpSearchResults {
 }
 
 class YelpRestaurant {
+    String id;
     String name;
     String display_phone;
     double rating;
