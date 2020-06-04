@@ -126,7 +126,7 @@ public class SearchActivity extends Fragment implements LocationListener {
         mLocationText.setRawInputType(InputType.TYPE_CLASS_TEXT);
         mLocationText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 
-        mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        TextView.OnEditorActionListener searchAction = new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH ||
@@ -137,22 +137,14 @@ public class SearchActivity extends Fragment implements LocationListener {
                 }
                 return false;
             }
-        });
-        mLocationText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                        actionId == EditorInfo.IME_ACTION_DONE ||
-                        event.getAction() == KeyEvent.ACTION_DOWN ||
-                        event.getAction() == KeyEvent.KEYCODE_ENTER) {
-                    searchBusiness();
-                }
-                return false;
-            }
-        });
+        };
+
+        mSearchText.setOnEditorActionListener(searchAction);
+        mLocationText.setOnEditorActionListener(searchAction);
     }
 
     private void searchBusiness() {
+        yelpRestaurants.clear();
         String searchEntry = mSearchText.getText().toString();
         String location = mLocationText.getText().toString();
 
