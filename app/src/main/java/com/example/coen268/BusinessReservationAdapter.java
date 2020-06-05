@@ -13,43 +13,54 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
 
 public class BusinessReservationAdapter extends ArrayAdapter<String> {
-    ArrayList<String> m_user_ids;
-    Button m_accept;
+    Reservation m_reservation;
+    String m_key;
     FragmentActivity m_Context;
     DatabaseReference m_databaseReservation;
 
-    public BusinessReservationAdapter(FragmentActivity context, ArrayList<String> user_ids, Button accept){
+    public BusinessReservationAdapter(FragmentActivity context){
         super(context, R.layout.listitem_biz_reservation);
         this.m_Context = context;
-        this.m_user_ids = user_ids;
-        this.m_accept = accept;
+        m_databaseReservation = FirebaseDatabase.getInstance().getReference("Reservations");
     }
 
     @Override
     public int getCount(){
-        return m_user_ids.size();
+        if(m_reservation == null || m_reservation.getUser_ids() == null){
+           return 0;
+        }
+        return m_reservation.getUser_ids().size();
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater mInflater = (LayoutInflater) m_Context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = mInflater.inflate(R.layout.listitem_biz_reservation, parent,false);
         TextView User_ids_textView = (TextView)convertView.findViewById(R.id.textView_name);
         Button btn_accept = (Button)convertView.findViewById(R.id.btn_accept);
-
-        User_ids_textView.setText(m_user_ids.get(position));
+        User_ids_textView.setText(m_reservation.getUser_ids().get(position));
         btn_accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                m_reservation.getUser_ids().remove(position);
+                m_databaseReservation.child(m_key).setValue(m_reservation);
 
             }
         });
         return convertView;
     }
+
+    public void setReservation(String key, Reservation reservation){
+        m_key = key;
+        m_reservation = reservation;
+
+    }
+
 }
