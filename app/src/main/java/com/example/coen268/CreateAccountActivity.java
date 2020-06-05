@@ -20,9 +20,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.function.Function;
 
 public class CreateAccountActivity extends AppCompatActivity implements User.OnCreateAccountListener {
@@ -124,6 +127,19 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
                         }
                     }
                 });
+        // Register a document in real time database for business reservation info
+        if (user.getAccountType().equals(Constants.ACCOUNT_TYPE_BUSINESS)) {
+            DatabaseReference databaseReservation = FirebaseDatabase.getInstance().getReference("Reservations");
+
+            // Assume the firestore database is working; that means when code reaches here,
+            // the business must be a new business, and thus doesn't exist in the realtime database
+            DatabaseReference newEntry = databaseReservation.push();
+            BusinessOwner bizUser = (BusinessOwner) user;
+
+            final Number quota = 3; // TODO: if time allows, please add UI that can change this quota
+            Reservation newReservation = new Reservation(bizUser.getBusinessId(), new ArrayList<String>(), quota);
+            newEntry.setValue(newReservation);
+        }
     }
 
     private void updateProfile(final User user) {

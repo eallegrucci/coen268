@@ -20,15 +20,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class BusinessReservationFragment extends Fragment {
     private static final String TAG = "databaseError";
     DatabaseReference m_databaseReservation;
     ListView m_myBusinessReserveListView;
-    ArrayList<String> m_userIdsTarget;
 
-    String m_key;
     BusinessReservationAdapter m_BusinessReservationAdapter;
 
     @Nullable
@@ -64,7 +62,6 @@ public class BusinessReservationFragment extends Fragment {
 
                     String key = ds.getKey();
                     m_BusinessReservationAdapter.setReservation(key,reservation);
-//                    System.out.println(reservation);
 
                     m_BusinessReservationAdapter.notifyDataSetChanged();
 
