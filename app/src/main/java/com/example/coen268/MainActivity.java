@@ -36,10 +36,11 @@ public class MainActivity extends AppCompatActivity {
                         Log.i("onNavigationItemSelected", "account fragment selected");
                         selectedFrag = new Account();
                         break;
-                    case R.id.myReservationsItem:
-                        Log.i("onNavigationItemSelected", "reservation fragment selected");
-                        selectedFrag = new ReservationFragment();
-                        break;
+                        // TODO: convert reservation activity to fragment
+//                    case R.id.myReservationsItem:
+//                        Log.i("onNavigationItemSelected", "reservation fragment selected");
+//                        selectedFrag = new ReservationFragment();
+//                        break;
                 }
                 if (selectedFrag != null) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
