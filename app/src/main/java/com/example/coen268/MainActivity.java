@@ -56,14 +56,16 @@ public class MainActivity extends AppCompatActivity {
                 new SearchActivity()).addToBackStack(null).commit();
 
         btn_reservationActivity = findViewById(R.id.reservationActivity);
-        btn_reservationActivity.setOnClickListener(this);
+        btn_reservationActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.reservationActivity) {
+                    Intent i = new Intent(MainActivity.this, BusinessReservation.class);
+                    startActivity(i);
+                }
+
+            }
+        });
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.reservationActivity) {
-            Intent i = new Intent(MainActivity.this, BusinessReservation.class);
-            startActivity(i);
-        }
-    }
 }
