@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "1067644233325",
+    "firebase_url": "https://coen-268-8ab81.firebaseio.com",
+    "project_id": "coen-268-8ab81",
+    "storage_bucket": "coen-268-8ab81.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067644233325:android:9c5d8f46677e86255e8164",
+        "android_client_info": {
+          "package_name": "com.example.coen268"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1067644233325-1bpju1cafg9fsgroahfojvqg8q1d2k88.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.coen268",
+            "certificate_hash": "dcaff4f5bd8762567f072142a2fb4e7b0519eac3"
+          }
+        },
+        {
+          "client_id": "1067644233325-upsoium0llspeh9f2nbdc2sj6r097p49.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.coen268",
+            "certificate_hash": "156c57d8ba6ea4967775f2c1f43a36a84faefcc4"
+          }
+        },
+        {
+          "client_id": "1067644233325-7rn5tk6tcdsndamb6etosuj6jbvmgrta.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuuszwkes4C-UZUJqXg3p8Sn8weI-OCw0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1067644233325-vorct2aqrg262vs9o070n5avkqghjkb0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

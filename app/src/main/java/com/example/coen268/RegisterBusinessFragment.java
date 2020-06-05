@@ -143,7 +143,7 @@ public class RegisterBusinessFragment extends Fragment implements View.OnClickLi
 
         YelpService yelpService = retrofit.create(YelpService.class);
 
-        yelpService.searchRestaurants("Bearer "+ getString(R.string.yelp_api_key), searchName, searchLocation)
+        yelpService.searchBusinesses("Bearer "+ getString(R.string.yelp_api_key), searchName, searchLocation)
                 .enqueue(new Callback<YelpSearchResults>() {
                     @Override
                     public void onResponse(Call<YelpSearchResults> call, Response<YelpSearchResults> response) {

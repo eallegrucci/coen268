@@ -4,14 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
     BottomNavigationView navBar;
 
     @Override
@@ -33,9 +35,10 @@ public class MainActivity extends AppCompatActivity {
                         Log.i("onNavigationItemSelected", "account fragment selected");
                         selectedFrag = new Account();
                         break;
+                        // TODO: convert reservation activity to fragment
                     case R.id.myReservationsItem:
                         Log.i("onNavigationItemSelected", "reservation fragment selected");
-                        selectedFrag = new ReservationFragment();
+                        selectedFrag = new BusinessReservationFragment();
                         break;
                 }
                 if (selectedFrag != null) {
@@ -51,5 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 new SearchActivity()).addToBackStack(null).commit();
+
+
     }
+
 }
