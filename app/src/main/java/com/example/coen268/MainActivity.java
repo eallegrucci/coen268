@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-    Button btn_reservationActivity;
     BottomNavigationView navBar;
 
     @Override
@@ -37,10 +36,10 @@ public class MainActivity extends AppCompatActivity {
                         selectedFrag = new Account();
                         break;
                         // TODO: convert reservation activity to fragment
-//                    case R.id.myReservationsItem:
-//                        Log.i("onNavigationItemSelected", "reservation fragment selected");
-//                        selectedFrag = new ReservationFragment();
-//                        break;
+                    case R.id.myReservationsItem:
+                        Log.i("onNavigationItemSelected", "reservation fragment selected");
+                        selectedFrag = new BusinessReservationFragment();
+                        break;
                 }
                 if (selectedFrag != null) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
@@ -56,17 +55,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 new SearchActivity()).addToBackStack(null).commit();
 
-        btn_reservationActivity = findViewById(R.id.reservationActivity);
-        btn_reservationActivity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v.getId() == R.id.reservationActivity) {
-                    Intent i = new Intent(MainActivity.this, BusinessReservation.class);
-                    startActivity(i);
-                }
 
-            }
-        });
     }
 
 }

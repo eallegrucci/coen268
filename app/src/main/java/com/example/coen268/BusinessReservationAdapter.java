@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
@@ -17,8 +20,10 @@ import java.util.ArrayList;
 public class BusinessReservationAdapter extends ArrayAdapter<String> {
     ArrayList<String> m_user_ids;
     Button m_accept;
-    Context m_Context;
-    public BusinessReservationAdapter(Context context, ArrayList<String> user_ids, Button accept){
+    FragmentActivity m_Context;
+    DatabaseReference m_databaseReservation;
+
+    public BusinessReservationAdapter(FragmentActivity context, ArrayList<String> user_ids, Button accept){
         super(context, R.layout.listitem_biz_reservation);
         this.m_Context = context;
         this.m_user_ids = user_ids;
