@@ -87,21 +87,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.googleSignInButton:
                 signInWithGoogle();
-                toMainActivity();
                 break;
             case R.id.emailPwdSignInButton:
                 signInWithEmailAndPassword();
-                toMainActivity();
                 break;
             case R.id.createAccountButton:
                 createAccount();
                 break;
         }
-    }
-
-    private void toMainActivity() {
-        Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(i);
     }
 
     private void signInWithGoogle() {

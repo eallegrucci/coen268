@@ -88,7 +88,7 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
-                                if (task.getResult() != null || task.getResult().size() != 0) {
+                                if (task.getResult().size() != 0) {
                                     Snackbar.make(findViewById(R.id.fragment_container), "Failed to create account. Account already exists.", Snackbar.LENGTH_LONG).show();
                                     Log.d(TAG, "An account for " + user.getDisplayName() + " already exists");
                                 } else {
