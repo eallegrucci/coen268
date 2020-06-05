@@ -1,4 +1,4 @@
-package com.example.coen268.fragment;
+package com.example.coen268;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -23,7 +23,7 @@ public class CreateAccountCredentialsFragment extends Fragment implements View.O
 
     private String accountType;
 
-    private Button nextButton;
+    private Button actionButton;
 
     private TextInputLayout nameTextField;
     private TextInputLayout emailTextField;
@@ -41,8 +41,8 @@ public class CreateAccountCredentialsFragment extends Fragment implements View.O
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_create_account_credentials, container, false);
-        nextButton = view.findViewById(R.id.next);
-        nextButton.setOnClickListener(this);
+        actionButton = view.findViewById(R.id.next);
+        actionButton.setOnClickListener(this);
         nameTextField = view.findViewById(R.id.name);
         emailTextField = view.findViewById(R.id.email);
         passwordTextField = view.findViewById(R.id.password);
@@ -97,12 +97,21 @@ public class CreateAccountCredentialsFragment extends Fragment implements View.O
             confirmPasswordTextField.setError(null);
         }
 
-        listener.onCredentialsCompleted(new User.UserBuilder(accountType)
-                .setDisplayName(displayName)
-                .setEmail(email)
-                .setPassword(password)
-                .build()
-        );
+        if (accountType.equals(Constants.ACCOUNT_TYPE_BUSINESS)) {
+            listener.onCredentialsCompleted(new User.UserBuilder(accountType)
+                    .setDisplayName(displayName)
+                    .setEmail(email)
+                    .setPassword(password)
+                    .build()
+            );
+        } else {
+            listener.createAccount(new User.UserBuilder(accountType)
+                    .setDisplayName(displayName)
+                    .setEmail(email)
+                    .setPassword(password)
+                    .build()
+            );
+        }
     }
 
     @Override
@@ -120,6 +129,7 @@ public class CreateAccountCredentialsFragment extends Fragment implements View.O
         switch(accountType) {
             case Constants.ACCOUNT_TYPE_CUSTOMER:
                 nameTextField.setHint(getResources().getString(R.string.prompt_name));
+                actionButton.setText("Finish");
                 break;
             case Constants.ACCOUNT_TYPE_BUSINESS:
                 nameTextField.setHint(getResources().getString(R.string.prompt_business));

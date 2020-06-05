@@ -4,32 +4,26 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class User implements Parcelable {
+    protected String id;
     protected String type;
     protected String displayName;
     protected String email;
     protected String password;
-    protected String streetAddress;
-    protected String city;
-    protected String zip;
 
     public User() {
+        id = "";
         type = "";
         displayName = "";
         email = "";
         password = "";
-        streetAddress = "";
-        city = "";
-        zip = "";
     }
 
     protected User(Parcel in) {
+        id = in.readString();
         type = in.readString();
         displayName = in.readString();
         email = in.readString();
         password = in.readString();
-        streetAddress = in.readString();
-        city = in.readString();
-        zip = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -51,27 +45,27 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
+        out.writeString(id);
         out.writeString(type);
         out.writeString(displayName);
         out.writeString(email);
         out.writeString(password);
-        out.writeString(password);
-        out.writeString(streetAddress);
-        out.writeString(city);
-        out.writeString(zip);
     }
 
     public static class UserBuilder {
+        private String id;
         private String type;
         private String displayName;
         private String email;
         private String password;
-        private String streetAddress;
-        private String city;
-        private String zip;
 
         public UserBuilder(String type) {
             this.type = type;
+        }
+
+        public UserBuilder setId(String id) {
+            this.id = id;
+            return this;
         }
 
         public UserBuilder setDisplayName(String displayName) {
@@ -89,21 +83,6 @@ public class User implements Parcelable {
             return this;
         }
 
-        public UserBuilder setStreetAddress(String streetAddress) {
-            this.streetAddress = streetAddress;
-            return this;
-        }
-
-        public UserBuilder setCity(String city) {
-            this.city = city;
-            return this;
-        }
-
-        public UserBuilder setZip(String zip) {
-            this.zip = zip;
-            return this;
-        }
-
         public User build() {
             return new User(this);
         }
@@ -111,14 +90,14 @@ public class User implements Parcelable {
     }
 
     private User(UserBuilder builder) {
+        this.id = builder.id;
         this.type = builder.type;
         this.displayName = builder.displayName;
         this.email = builder.email;
         this.password = builder.password;
-        this.streetAddress = builder.streetAddress;
-        this.city = builder.city;
-        this.zip = builder.zip;
     }
+
+    public String getId() { return id; }
 
     public String getAccountType() { return type; }
 
@@ -134,20 +113,15 @@ public class User implements Parcelable {
         return password;
     }
 
-    public String getStreetAddress() { return streetAddress; }
-
-    public String getCity() { return city; }
-
-    public String getZip() { return zip; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String toString() {
         return "Account type: " + type +
                 " Display name: " + displayName +
                 " Email: " + email +
-                " Password: " + password +
-                " Street address: " + streetAddress +
-                " City: " + city +
-                " ZIP: " + zip;
+                " Password: " + password;
     }
 
     public interface OnCreateAccountListener {
