@@ -20,9 +20,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.function.Function;
 
 public class CreateAccountActivity extends AppCompatActivity implements User.OnCreateAccountListener {
@@ -83,25 +86,27 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
     @Override
     public void createAccount(final User user) {
         if (user.getAccountType().equals(Constants.ACCOUNT_TYPE_BUSINESS)) {
-            firestoreService.query("users", "business_id", ((BusinessOwner) user).getBusinessId())
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                if (task.getResult() != null || task.getResult().size() != 0) {
-                                    Snackbar.make(findViewById(R.id.fragment_container), "Failed to create account. Account already exists.", Snackbar.LENGTH_LONG).show();
-                                    Log.d(TAG, "An account for " + user.getDisplayName() + " already exists");
-                                } else {
-                                    createAccountWithEmailPassword(user);
-                                }
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                }
-                            } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
-                            }
-                        }
-                    });
+            createAccountWithEmailPassword(user);
+            // TODO: the code below is currently broken; need to circumvent the logic temporarily.
+//            firestoreService.query("users", "business_id", ((BusinessOwner) user).getBusinessId())
+//                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                            if (task.isSuccessful()) {
+//                                if (task.getResult() != null || task.getResult().size() != 0) {
+//                                    Snackbar.make(findViewById(R.id.fragment_container), "Failed to create account. Account already exists.", Snackbar.LENGTH_LONG).show();
+//                                    Log.d(TAG, "An account for " + user.getDisplayName() + " already exists");
+//                                } else {
+//                                    createAccountWithEmailPassword(user);
+//                                }
+//                                for (QueryDocumentSnapshot document : task.getResult()) {
+//                                    Log.d(TAG, document.getId() + " => " + document.getData());
+//                                }
+//                            } else {
+//                                Log.d(TAG, "Error getting documents: ", task.getException());
+//                            }
+//                        }
+//                    });
         } else {
             createAccountWithEmailPassword(user);
         }
@@ -124,6 +129,19 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
                         }
                     }
                 });
+        // Register a document in real time database for business reservation info
+        if (user.getAccountType().equals(Constants.ACCOUNT_TYPE_BUSINESS)) {
+            DatabaseReference databaseReservation = FirebaseDatabase.getInstance().getReference("Reservations");
+
+            // Assume the firestore database is working; that means when code reaches here,
+            // the business must be a new business, and thus doesn't exist in the realtime database
+            DatabaseReference newEntry = databaseReservation.push();
+            BusinessOwner bizUser = (BusinessOwner) user;
+
+            final Number quota = 3; // TODO: if time allows, please add UI that can change this quota
+            Reservation newReservation = new Reservation(bizUser.getBusinessId(), new ArrayList<String>(), quota);
+            newEntry.setValue(newReservation);
+        }
     }
 
     private void updateProfile(final User user) {
