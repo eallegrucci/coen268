@@ -27,7 +27,8 @@ public class BusinessReservationFragment extends Fragment {
     DatabaseReference m_databaseReservation;
     ListView m_myBusinessReserveListView;
     ArrayList<String> m_userIdsTarget;
-    Button m_acceptbtn;
+
+    String m_key;
     BusinessReservationAdapter m_BusinessReservationAdapter;
 
     @Nullable
@@ -49,10 +50,8 @@ public class BusinessReservationFragment extends Fragment {
         }
 
 
-        m_userIdsTarget = new ArrayList<>();
-
         m_BusinessReservationAdapter =
-                new BusinessReservationAdapter(getActivity(), m_userIdsTarget, m_acceptbtn);
+                new BusinessReservationAdapter(getActivity());
 
         m_myBusinessReserveListView.setAdapter(m_BusinessReservationAdapter);
 
@@ -60,13 +59,13 @@ public class BusinessReservationFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds:dataSnapshot.getChildren()){
+
                     Reservation reservation = ds.getValue(Reservation.class);
+
+                    String key = ds.getKey();
+                    m_BusinessReservationAdapter.setReservation(key,reservation);
 //                    System.out.println(reservation);
-                    List<String> userIdSrc =reservation.getUser_ids();
-                    m_userIdsTarget.clear();
-                    for(String str: userIdSrc){
-                        m_userIdsTarget.add(str);
-                    }
+
                     m_BusinessReservationAdapter.notifyDataSetChanged();
 
                     break; // temporily jup out of this loop for testing purpose since we only have one data now
