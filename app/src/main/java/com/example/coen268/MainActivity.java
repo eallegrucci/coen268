@@ -9,21 +9,21 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Button searchActivity;
+    Button btn_reservationActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        searchActivity = findViewById(R.id.searchActivity);
-        searchActivity.setOnClickListener(this);
+        btn_reservationActivity = findViewById(R.id.reservationActivity);
+        btn_reservationActivity.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.searchActivity) {
-            Intent i = new Intent(MainActivity.this, SearchActivity.class);
+        if (v.getId() == R.id.reservationActivity) {
+            Intent i = new Intent(MainActivity.this, BusinessReservation.class);
             startActivity(i);
         }
     }
