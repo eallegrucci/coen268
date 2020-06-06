@@ -96,6 +96,7 @@ public class SearchActivity extends Fragment implements LocationListener {
     }
 
     private void putInfo(int position, Intent i) {
+        String id = yelpRestaurants.get(position).id;
         String image = yelpRestaurants.get(position).image_url;
         String n = yelpRestaurants.get(position).name;
         String phone = yelpRestaurants.get(position).display_phone;
@@ -107,6 +108,7 @@ public class SearchActivity extends Fragment implements LocationListener {
         String address = yelpRestaurants.get(position).location.city + ", " +
                 yelpRestaurants.get(position).location.state + " " +
                 yelpRestaurants.get(position).location.zip_code;
+        i.putExtra("id",id);
         i.putExtra("image", image);
         i.putExtra("name", n);
         i.putExtra("phone", phone);
