@@ -6,12 +6,12 @@ import java.util.List;
 public class Reservation {
     String business_id;
     List<String> user_ids;
-    Number quota;
+    String quota;
 
     public Reservation(){
 
     }
-    public Reservation(String business_id, List<String> user_ids, Number quota){
+    public Reservation(String business_id, List<String> user_ids, String quota){
         this.business_id = business_id;
         this.user_ids = user_ids;
         this.quota = quota;
@@ -25,5 +25,5 @@ public class Reservation {
         return user_ids;
     }
 
-    public Number getQuota(){return quota;}
+    public String getQuota(){return quota;}
 }
