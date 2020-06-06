@@ -137,7 +137,7 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
             BusinessOwner bizUser = (BusinessOwner) user;
 
             final Number quota = 3; // TODO: if time allows, please add UI that can change this quota
-            Reservation newReservation = new Reservation(bizUser.getBusinessId(), new ArrayList<String>(), quota);
+            Reservation newReservation = new Reservation(bizUser.getBusinessId(), new ArrayList<String>(), quota.toString());
             newEntry.setValue(newReservation);
         }
     }
