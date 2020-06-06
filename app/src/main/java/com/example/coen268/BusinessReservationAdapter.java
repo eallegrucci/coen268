@@ -16,10 +16,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class BusinessReservationAdapter extends ArrayAdapter<String> {
     Reservation m_reservation;
+    List<String> m_userNames;
     String m_key;
     FragmentActivity m_Context;
     DatabaseReference m_databaseReservation;
@@ -45,7 +47,8 @@ public class BusinessReservationAdapter extends ArrayAdapter<String> {
         convertView = mInflater.inflate(R.layout.listitem_biz_reservation, parent,false);
         TextView User_ids_textView = (TextView)convertView.findViewById(R.id.textView_name);
         Button btn_accept = (Button)convertView.findViewById(R.id.btn_accept);
-        User_ids_textView.setText(m_reservation.getUser_ids().get(position));
+        User_ids_textView.setText(m_userNames.get(position));
+
         btn_accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,10 +60,10 @@ public class BusinessReservationAdapter extends ArrayAdapter<String> {
         return convertView;
     }
 
-    public void setReservation(String key, Reservation reservation){
+    public void setReservation(String key, Reservation reservation, List<String> userNames){
         m_key = key;
         m_reservation = reservation;
-
+        m_userNames = userNames;
     }
 
 }

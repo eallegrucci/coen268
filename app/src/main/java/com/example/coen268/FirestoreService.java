@@ -23,6 +23,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class FirestoreService extends Service {
     private final static String TAG = FirestoreService.class.getSimpleName();
@@ -91,6 +92,11 @@ public class FirestoreService extends Service {
 
     public Task<QuerySnapshot> query(String collection, String field, Object value) {
         Query query = db.collection(collection).whereEqualTo(field, value);
+        return query.get();
+    }
+
+    public Task<QuerySnapshot> query(String collection, String field, List<? extends Object> values) {
+        Query query = db.collection(collection).whereIn(field, values);
         return query.get();
     }
 
