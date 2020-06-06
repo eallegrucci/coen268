@@ -26,4 +26,8 @@ public class Reservation {
     }
 
     public String getQuota(){return quota;}
+
+    public void setUser_ids(List<String> user_ids){
+        this.user_ids = user_ids;
+    }
 }
