@@ -81,6 +81,9 @@ public class RestaurantActivity extends AppCompatActivity {
                                 }
                             }
                         }
+
+                        reserveSpotButton.setEnabled(true);
+
                         if(hasReserveSpot == false){
                             if(quotaLeft == 0){
                                 reserveSpotButton.setEnabled(false);
@@ -90,7 +93,6 @@ public class RestaurantActivity extends AppCompatActivity {
                                 IsCancelReserveBtn = false;
                                 reserveSpotButton.setText("Reserve Spot");
                             }
-
                         }
 
                         break;
@@ -167,6 +169,10 @@ public class RestaurantActivity extends AppCompatActivity {
             }
             user_ids.add(uID);
         }
+
+        reserveSpotButton.setText("Processing");
+        reserveSpotButton.setEnabled(false);
+
         m_databaseReservation.child(m_keyReservation).setValue(m_reservation);
     }
 
