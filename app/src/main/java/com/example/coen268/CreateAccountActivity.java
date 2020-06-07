@@ -37,6 +37,8 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
     private FirestoreService firestoreService;
     private boolean mBound;
 
+    DatabaseReference m_databaseFcmRegToken;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +48,8 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
 
         accountType = getIntent().getStringExtra(Constants.KEY_ACCOUNT_TYPE);
         initializeDisplay();
+
+        m_databaseFcmRegToken = FirebaseDatabase.getInstance().getReference("FcmTokens");
     }
 
     @Override

@@ -54,7 +54,6 @@ public class BusinessReservationFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_business_reservation, container, false);
         m_Auth = FirebaseAuth.getInstance();
         m_firebaseUser = m_Auth.getCurrentUser();
-//        String uID = m_firebaseUser.getUid();
         return v;
     }
 

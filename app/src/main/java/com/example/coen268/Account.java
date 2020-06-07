@@ -28,9 +28,13 @@ public class Account extends Fragment {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(FCMService.FCM_CMDCHANNEL);
+                intent.putExtra("Command", FCMService.CMD_LOGOUT);
+                intent.putExtra("uid", FirebaseAuth.getInstance().getUid());
+                getActivity().sendBroadcast(intent);
+
                 FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getContext(), StartActivity.class);
-                startActivity(intent);
+                getActivity().finish();
             }
         });
 

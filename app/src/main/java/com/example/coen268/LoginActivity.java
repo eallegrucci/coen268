@@ -125,6 +125,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+
+                            // Send logged in uid to fcm service
+                            Intent intent = new Intent(FCMService.FCM_CMDCHANNEL);
+                            intent.putExtra("Command", FCMService.CMD_LOGIN);
+                            intent.putExtra("uid", user.getUid());
+                            sendBroadcast(intent);
+
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -185,6 +192,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+
+                            // Send logged in uid to fcm service
+                            Intent intent = new Intent(FCMService.FCM_CMDCHANNEL);
+                            intent.putExtra("uid", user.getUid());
+                            sendBroadcast(intent);
+
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.

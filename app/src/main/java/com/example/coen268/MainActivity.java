@@ -79,8 +79,14 @@ public class MainActivity extends AppCompatActivity {
         // Bind to FirestoreService
         Intent intent = new Intent(this, FirestoreService.class);
         bindService(intent, m_connection, Context.BIND_AUTO_CREATE);
-
-
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (m_connection != null) {
+            unbindService(m_connection);
+        }
+    }
 }
