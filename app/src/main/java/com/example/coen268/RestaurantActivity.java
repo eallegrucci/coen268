@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,9 +23,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RestaurantActivity extends AppCompatActivity {
     private String image_url, name, phone, price, street, address, distance, hours, id;
@@ -41,7 +47,7 @@ public class RestaurantActivity extends AppCompatActivity {
     Reservation m_reservation;
     String m_keyReservation;
     ValueEventListener m_realtimeDbListener;
-
+    private FirebaseFunctions m_functions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +129,7 @@ public class RestaurantActivity extends AppCompatActivity {
         //this listener need to be added last.
         m_databaseReservation.addValueEventListener(m_realtimeDbListener);
 
+        m_functions = FirebaseFunctions.getInstance();
     }
 
     private void getInfo(Intent i) {
@@ -153,7 +160,8 @@ public class RestaurantActivity extends AppCompatActivity {
     }
     public void ReserveSpot(View view){
         List<String>user_ids = m_reservation.getUser_ids();
-        if(IsCancelReserveBtn){//remove user from real database
+        String command = "";
+        if (IsCancelReserveBtn){//remove user from real database
            for(int index = 0; index < user_ids.size(); index++){
                if(user_ids.get(index).equals(uID)){
                    //uID is unique, so there should be only one in the list of reservation.getUser_ids()
@@ -161,19 +169,22 @@ public class RestaurantActivity extends AppCompatActivity {
                    break;
                }
            }
-        }
-        else{
-            if(user_ids == null){
+           command = "Cancel";
+        } else{
+            if(user_ids == null) {
                 user_ids = new ArrayList<>();
                 m_reservation.setUser_ids(user_ids);
             }
             user_ids.add(uID);
+            command = "Reserve";
         }
 
         reserveSpotButton.setText("Processing");
         reserveSpotButton.setEnabled(false);
 
         m_databaseReservation.child(m_keyReservation).setValue(m_reservation);
+
+        sendReserveNotificationAsync(command, uID, m_reservation.getBusiness_id());
     }
 
     @Override
@@ -188,4 +199,21 @@ public class RestaurantActivity extends AppCompatActivity {
         finish();
     }
 
+    public Task<String> sendReserveNotificationAsync(String command, String clientUid, String businessId) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("clientUid", clientUid);
+        data.put("businessId", businessId);
+        data.put("command", command);
+
+        return m_functions
+                .getHttpsCallable("sendClientReserveCancelNotification")
+                .call(data)
+                .continueWith(new Continuation<HttpsCallableResult, String>() {
+                    @Override
+                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        String result = (String) task.getResult().getData();
+                        return result;
+                    }
+                });
+    }
 }
