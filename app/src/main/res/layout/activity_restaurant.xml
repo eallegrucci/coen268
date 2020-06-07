@@ -134,7 +134,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Open Spots"
-        app:layout_constraintEnd_toStartOf="@+id/returnHomeButton"
+        app:layout_constraintEnd_toStartOf="@+id/returnBackButton"
         app:layout_constraintHorizontal_bias="0.344"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restaurantNumOpenSpots" />
@@ -153,11 +153,12 @@
         app:layout_constraintTop_toBottomOf="@+id/restaurantPhoneNumber" />
 
     <Button
-        android:id="@+id/returnHomeButton"
+        android:id="@+id/returnBackButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Home"
+        android:text="Back"
+        android:onClick="ReturnBackButtonClick"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.863"
         app:layout_constraintStart_toStartOf="parent"

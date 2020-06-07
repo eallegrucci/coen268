@@ -29,7 +29,7 @@ public class RestaurantActivity extends AppCompatActivity {
     private String image_url, name, phone, price, street, address, distance, hours, id;
     private double rating, reviewCount;
     private static final String TAG ="database ERROR";
-    Button reserveSpotButton, returnHomeButton;
+    Button reserveSpotButton, returnBackButton;
     TextView tvName, tvCount, tvPrice, tvDistance, tvPhone, tvStreet, tvAddress,restaurantNumOpenSpots;
     ImageView ivImage;
     RatingBar mRatingBar;
@@ -40,6 +40,7 @@ public class RestaurantActivity extends AppCompatActivity {
     Boolean IsCancelReserveBtn;
     Reservation m_reservation;
     String m_keyReservation;
+    ValueEventListener m_realtimeDbListener;
 
 
     @Override
@@ -55,7 +56,7 @@ public class RestaurantActivity extends AppCompatActivity {
         Intent i = getIntent();
         getInfo(i);
         m_databaseReservation = FirebaseDatabase.getInstance().getReference("Reservations");
-        ValueEventListener postListener = new ValueEventListener() {
+        m_realtimeDbListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds:dataSnapshot.getChildren()){
@@ -80,6 +81,9 @@ public class RestaurantActivity extends AppCompatActivity {
                                 }
                             }
                         }
+
+                        reserveSpotButton.setEnabled(true);
+
                         if(hasReserveSpot == false){
                             if(quotaLeft == 0){
                                 reserveSpotButton.setEnabled(false);
@@ -89,7 +93,6 @@ public class RestaurantActivity extends AppCompatActivity {
                                 IsCancelReserveBtn = false;
                                 reserveSpotButton.setText("Reserve Spot");
                             }
-
                         }
 
                         break;
@@ -104,7 +107,7 @@ public class RestaurantActivity extends AppCompatActivity {
         };
 
         reserveSpotButton = (Button) findViewById(R.id.reserveButton);
-        returnHomeButton = (Button) findViewById(R.id.returnHomeButton);
+        returnBackButton = (Button) findViewById(R.id.returnBackButton);
         restaurantNumOpenSpots = (TextView)findViewById(R.id.restaurantNumOpenSpots);
         tvName = (TextView) findViewById(R.id.restaurantName);
         tvCount = (TextView) findViewById(R.id.restaurantRevCount);
@@ -118,7 +121,7 @@ public class RestaurantActivity extends AppCompatActivity {
 
         setViews();
         //this listener need to be added last.
-        m_databaseReservation.addValueEventListener(postListener);
+        m_databaseReservation.addValueEventListener(m_realtimeDbListener);
 
     }
 
@@ -166,7 +169,23 @@ public class RestaurantActivity extends AppCompatActivity {
             }
             user_ids.add(uID);
         }
-        m_databaseReservation.child(m_keyReservation).setValue(m_reservation);
 
+        reserveSpotButton.setText("Processing");
+        reserveSpotButton.setEnabled(false);
+
+        m_databaseReservation.child(m_keyReservation).setValue(m_reservation);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (m_realtimeDbListener != null) {
+            m_databaseReservation.removeEventListener(m_realtimeDbListener);
+        }
+    }
+
+    public void ReturnBackButtonClick(View v) {
+        finish();
+    }
+
 }
