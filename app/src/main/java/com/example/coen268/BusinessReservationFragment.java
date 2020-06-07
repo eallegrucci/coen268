@@ -1,6 +1,5 @@
 package com.example.coen268;
 
-// TODO: convert reservation activity to fragment
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -43,6 +42,7 @@ public class BusinessReservationFragment extends Fragment {
     DatabaseReference m_databaseReservation;
     ListView m_myBusinessReserveListView;
     BusinessReservationAdapter m_BusinessReservationAdapter;
+    ValueEventListener m_realtimeDbListener;
 
     public BusinessReservationFragment(FirestoreService connectedService) {
         m_firestoreService = connectedService;
@@ -67,39 +67,41 @@ public class BusinessReservationFragment extends Fragment {
                        QueryDocumentSnapshot snapshot =  task.getResult().iterator().next();
                        final String bizID = (String)snapshot.getData().get("business_id");
 //                       System.out.print(bizID);
-                       ValueEventListener postListener = new ValueEventListener() {
+                       m_realtimeDbListener = new ValueEventListener() {
                            @Override
                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                for(DataSnapshot ds:dataSnapshot.getChildren()){
                                    final Reservation reservation = ds.getValue(Reservation.class);
                                    String matchedBizId = reservation.getBusiness_id();
-                                   if(reservation.getUser_ids() != null && matchedBizId.equals(bizID)){
+                                   if(matchedBizId.equals(bizID)){
                                        final String key = ds.getKey();
 
-                                       m_firestoreService.query("users", "id", reservation.getUser_ids())
-                                               .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                   @Override
-                                                   public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                       QuerySnapshot qs = task.getResult();
-                                                       List<String> userNames = new ArrayList<>();
-                                                       int count = 0;
-                                                       for (QueryDocumentSnapshot qds : qs) {
-                                                           String name = (String)qds.get("name");
-                                                           if (!qds.get("id").equals(reservation.getUser_ids().get(count))) {
-                                                               // throw new Exception("id not match name in correct order");
-                                                               Log.e(TAG, "Database ID not matching reservation ID in correct order");
+                                       if (reservation.getUser_ids() != null) {
+                                           m_firestoreService.query("users", "id", reservation.getUser_ids())
+                                                   .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                       @Override
+                                                       public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                           QuerySnapshot qs = task.getResult();
+                                                           List<String> userNames = new ArrayList<>();
+                                                           int count = 0;
+                                                           for (QueryDocumentSnapshot qds : qs) {
+                                                               String name = (String) qds.get("name");
+                                                               if (!qds.get("id").equals(reservation.getUser_ids().get(count))) {
+                                                                   // throw new Exception("id not match name in correct order");
+                                                                   Log.e(TAG, "Database ID not matching reservation ID in correct order");
+                                                               }
+
+                                                               userNames.add(name);
+                                                               count++;
                                                            }
 
-                                                           userNames.add(name);
-                                                           count++;
+                                                           m_BusinessReservationAdapter.setReservation(key, reservation, userNames);
+                                                           m_BusinessReservationAdapter.notifyDataSetChanged();
                                                        }
-
-                                                       m_BusinessReservationAdapter.setReservation(key, reservation, userNames);
-                                                       m_BusinessReservationAdapter.notifyDataSetChanged();
-                                                   }
-                                               });
-
-
+                                                   });
+                                       } else { // reservation.getUser_ids() == null
+                                           m_BusinessReservationAdapter.notifyDataSetChanged();
+                                       }
 
                                        break;
                                    }
@@ -110,7 +112,7 @@ public class BusinessReservationFragment extends Fragment {
                                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
                            }
                        };
-                       m_databaseReservation.addValueEventListener(postListener);
+                       m_databaseReservation.addValueEventListener(m_realtimeDbListener);
                    }
 
                 }
@@ -122,18 +124,22 @@ public class BusinessReservationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         m_databaseReservation = FirebaseDatabase.getInstance().getReference("Reservations");
-        try{
-            m_myBusinessReserveListView = (ListView)getView().findViewById(R.id.listview_busniessReservation);
-        }catch(Exception e){
-            System.out.print("");
-        }
+        m_myBusinessReserveListView = (ListView) getView().findViewById(R.id.listview_busniessReservation);
 
         m_BusinessReservationAdapter =
                 new BusinessReservationAdapter(getActivity());
 
         m_myBusinessReserveListView.setAdapter(m_BusinessReservationAdapter);
         queryDataBaseGetBussinessID();
+    }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (m_realtimeDbListener != null) {
+            m_databaseReservation.removeEventListener(m_realtimeDbListener);
+        }
     }
 
 }

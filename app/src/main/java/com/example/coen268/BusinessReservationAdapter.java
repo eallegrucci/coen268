@@ -46,12 +46,22 @@ public class BusinessReservationAdapter extends ArrayAdapter<String> {
         LayoutInflater mInflater = (LayoutInflater) m_Context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = mInflater.inflate(R.layout.listitem_biz_reservation, parent,false);
         TextView User_ids_textView = (TextView)convertView.findViewById(R.id.textView_name);
-        Button btn_accept = (Button)convertView.findViewById(R.id.btn_accept);
+        final Button btn_accept = (Button)convertView.findViewById(R.id.btn_accept);
         User_ids_textView.setText(m_userNames.get(position));
+
+        btn_accept.setEnabled(true);
+        btn_accept.setText("ACCEPT");
 
         btn_accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btn_accept.setEnabled(false);
+                btn_accept.setText("Processing...");
+
+                System.out.println("=====INSIDE====\nposition: " + position);
+                for (String s : m_reservation.getUser_ids()) {
+                    System.out.println("str :" + s);
+                }
                 m_reservation.getUser_ids().remove(position);
                 m_databaseReservation.child(m_key).setValue(m_reservation);
 

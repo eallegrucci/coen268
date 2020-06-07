@@ -26,12 +26,11 @@
 
     <Button
         android:id="@+id/btn_accept"
-        android:layout_width="68dp"
-        android:layout_height="33dp"
+        android:layout_width="106dp"
+        android:layout_height="37dp"
         android:text="Accept"
         tools:layout_editor_absoluteX="229dp"
-        tools:layout_editor_absoluteY="63dp"
-        />
+        tools:layout_editor_absoluteY="63dp" />
 
     <!--    <Button-->
     <!--        android:id="@+id/btn_remove"-->
