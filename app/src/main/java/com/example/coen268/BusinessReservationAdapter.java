@@ -58,10 +58,6 @@ public class BusinessReservationAdapter extends ArrayAdapter<String> {
                 btn_accept.setEnabled(false);
                 btn_accept.setText("Processing...");
 
-                System.out.println("=====INSIDE====\nposition: " + position);
-                for (String s : m_reservation.getUser_ids()) {
-                    System.out.println("str :" + s);
-                }
                 m_reservation.getUser_ids().remove(position);
                 m_databaseReservation.child(m_key).setValue(m_reservation);
 

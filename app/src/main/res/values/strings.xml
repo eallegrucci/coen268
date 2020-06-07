@@ -19,4 +19,9 @@
     <string name="action_finish">FINISH</string>
     <string name="action_search">SEARCH</string>
     <string name="text_or">OR</string>
+    <string name="title_account">My Account</string>
+    <string name="title_reservations">Reservations</string>
+    <string name="title_search">Search</string>
+    <string name="title_home">Home</string>
+    <string name="title_create_account">Create Account</string>
 </resources>

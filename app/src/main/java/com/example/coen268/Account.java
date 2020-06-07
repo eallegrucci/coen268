@@ -12,12 +12,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.coen268.user.User;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class Account extends Fragment {
 
     private Button logout;
     private TextView username;
+    private User user;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        user = getArguments().getParcelable(Constants.KEY_USER);
+    }
 
     @Nullable
     @Override
@@ -37,8 +45,7 @@ public class Account extends Fragment {
 
         username = v.findViewById(R.id.tvUserName);
 
-        //TODO: Add user's name below
-        String name = "";
+        String name = user.getDisplayName();
         username.setText("Hello, " + name);
 
         return v;

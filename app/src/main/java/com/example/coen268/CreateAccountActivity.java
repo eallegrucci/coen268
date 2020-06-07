@@ -42,6 +42,8 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
 
+        getSupportActionBar().setTitle(getResources().getString(R.string.title_create_account));
+
         mAuth = FirebaseAuth.getInstance();
 
         accountType = getIntent().getStringExtra(Constants.KEY_ACCOUNT_TYPE);
@@ -123,7 +125,7 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             Snackbar.make(findViewById(R.id.fragment_container), "Failed to create account.", Snackbar.LENGTH_LONG).show();
-                            updateUI(null);
+                            updateUI(null, null);
                         }
                     }
                 });
@@ -158,15 +160,16 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
                             if (mBound) {
                                 firestoreService.addUser(user);
                             }
-                            updateUI(firebaseUser);
+                            updateUI(firebaseUser, user);
                         }
                     }
                 });
     }
 
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
+    private void updateUI(FirebaseUser fbUser, User user) {
+        if (fbUser != null) {
             Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(Constants.KEY_USER, user);
             startActivity(intent);
         }
     }
