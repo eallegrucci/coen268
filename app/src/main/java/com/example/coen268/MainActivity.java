@@ -111,4 +111,12 @@ public class MainActivity extends AppCompatActivity {
         bindService(intent, m_connection, Context.BIND_AUTO_CREATE);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (m_connection != null) {
+            unbindService(m_connection);
+        }
+    }
 }

@@ -46,6 +46,7 @@ public class SearchActivity extends Fragment implements LocationListener {
     ArrayList<YelpRestaurant> yelpRestaurants;
     private EditText mSearchText;
     private EditText mLocationText;
+    private String mProvider;
 
     private static final String BASE_URL = "https://api.yelp.com/v3/";
     private static final String TAG = "MainActivity";
@@ -108,7 +109,7 @@ public class SearchActivity extends Fragment implements LocationListener {
         String address = yelpRestaurants.get(position).location.city + ", " +
                 yelpRestaurants.get(position).location.state + " " +
                 yelpRestaurants.get(position).location.zip_code;
-        i.putExtra("id",id);
+        i.putExtra("id", id);
         i.putExtra("image", image);
         i.putExtra("name", n);
         i.putExtra("phone", phone);
@@ -183,7 +184,7 @@ public class SearchActivity extends Fragment implements LocationListener {
         }
     }
 
-    private void yelpSearch(YelpService yelpService, String searchEntry, String location){
+    private void yelpSearch(YelpService yelpService, String searchEntry, String location) {
         yelpService.searchBusinesses("Bearer " + YELP_API_KEY, searchEntry, location)
                 .enqueue(new Callback<YelpSearchResults>() {
                     @Override
@@ -209,9 +210,9 @@ public class SearchActivity extends Fragment implements LocationListener {
     private void getLocationPermission() {
         String[] permissions = {FINE_LOCATION, COURSE_LOCATION};
 
-        if(ContextCompat.checkSelfPermission(getContext(), FINE_LOCATION) ==
+        if (ContextCompat.checkSelfPermission(getContext(), FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
-            if(ContextCompat.checkSelfPermission(getContext(), COURSE_LOCATION) ==
+            if (ContextCompat.checkSelfPermission(getContext(), COURSE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionsGranted = true;
                 loc = locationManager.getLastKnownLocation(locationManager.NETWORK_PROVIDER);
@@ -237,7 +238,7 @@ public class SearchActivity extends Fragment implements LocationListener {
 
     @Override
     public void onProviderEnabled(String provider) {
-
+        mProvider = provider;
     }
 
     @Override
@@ -245,7 +246,7 @@ public class SearchActivity extends Fragment implements LocationListener {
 
     }
 
-    private String locationToCity(){
+    private String locationToCity() {
         String addr = "";
         try {
             Geocoder geocoder = new Geocoder(getContext());

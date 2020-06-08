@@ -145,6 +145,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+
+                            // Send logged in uid to fcm service
+                            Intent intent = new Intent(FCMService.FCM_CMDCHANNEL);
+                            intent.putExtra("Command", FCMService.CMD_LOGIN);
+                            intent.putExtra("uid", user.getUid());
+                            sendBroadcast(intent);
+
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -207,13 +214,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                             boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
                             if (isNew) {
-                                // TODO fix account creation for Google authentication
+                                // TODO fix account creation for Google authentication - and sendBroadCast for FCM
                                 Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
                                 intent.putExtra(Constants.KEY_ACCOUNT_TYPE, accountType);
                                 intent.putExtra(Constants.KEY_IS_GOOGLE_AUTH, true);
                                 startActivity(intent);
                             } else {
                                 FirebaseUser user = mAuth.getCurrentUser();
+
+                                // Send logged in uid to fcm service
+                                Intent intent = new Intent(FCMService.FCM_CMDCHANNEL);
+                                intent.putExtra("uid", user.getUid());
+                                sendBroadcast(intent);
                                 updateUI(user);
                             }
                         } else {
