@@ -48,6 +48,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private TextInputLayout emailTextField;
     private TextInputLayout passwordTextField;
+    private Button emailPwdButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         emailTextField = findViewById(R.id.email);
         passwordTextField = findViewById(R.id.password);
 
-        Button emailPwdButton = findViewById(R.id.emailPwdSignInButton);
+        emailPwdButton = findViewById(R.id.emailPwdSignInButton);
         emailPwdButton.setOnClickListener(this);
 
         Button createAccountButton = findViewById(R.id.createAccountButton);
@@ -137,6 +138,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else {
             passwordTextField.setError(null);
         }
+
+        emailPwdButton.setText("LOADING...");
+        emailPwdButton.setEnabled(false);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -266,13 +270,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         } else {
                             Log.d(TAG, "unable to find document");
                             Snackbar.make(findViewById(R.id.emailPwdSignInButton), "User not found.", Snackbar.LENGTH_LONG).show();
+                            emailPwdButton.setText(getString(R.string.action_sign_in));
+                            emailPwdButton.setEnabled(true);
                         }
                     } else {
                         Log.d(TAG, "get failed with ", task.getException());
                         Snackbar.make(findViewById(R.id.emailPwdSignInButton), "Unable to retrieve user.", Snackbar.LENGTH_LONG).show();
+                        emailPwdButton.setText(getString(R.string.action_sign_in));
+                        emailPwdButton.setEnabled(true);
                     }
                 }
             });
+        } else {
+            emailPwdButton.setText(getString(R.string.action_sign_in));
+            emailPwdButton.setEnabled(true);
         }
     }
 
