@@ -143,6 +143,15 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "createUserWithEmail:success");
+
+                                AuthResult res = task.getResult();
+                                String createdUid = res.getUser().getUid();
+
+                                Intent intent = new Intent(FCMService.FCM_CMDCHANNEL);
+                                intent.putExtra("Command", FCMService.CMD_LOGIN);
+                                intent.putExtra("uid", createdUid);
+                                sendBroadcast(intent);
+
                                 updateProfile(user);
                             } else {
                                 // If sign in fails, display a message to the user.
