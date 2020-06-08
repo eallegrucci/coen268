@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">coen268</string>
+    <string name="app_name">Appointio</string>
     <string name="server_client_id">1067644233325-vorct2aqrg262vs9o070n5avkqghjkb0.apps.googleusercontent.com</string>
     <string name="yelp_api_key">QvovY7ARu_g-PbylLUKjbNTaNRYScXpmYZYsJQ3kXrYiXcLDRoDw9BKON_MW8oYWwh5EQObD6nDoZ_fagp5IN3eTJe-ITcjtUnfvILCKixiIr8keyjDd-zfoVoXCXnYx</string>
     <string name="action_customer">CUSTOMER</string>

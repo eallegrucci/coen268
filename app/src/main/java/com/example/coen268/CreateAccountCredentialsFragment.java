@@ -22,6 +22,7 @@ public class CreateAccountCredentialsFragment extends Fragment implements View.O
     private User.OnCreateAccountListener listener;
 
     private String accountType;
+    private boolean isGoogleAuth;
 
     private Button actionButton;
 
@@ -34,6 +35,7 @@ public class CreateAccountCredentialsFragment extends Fragment implements View.O
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         accountType = getArguments().getString(Constants.KEY_ACCOUNT_TYPE);
+        isGoogleAuth = getArguments().getBoolean(Constants.KEY_IS_GOOGLE_AUTH);
     }
 
     @Override
@@ -47,6 +49,10 @@ public class CreateAccountCredentialsFragment extends Fragment implements View.O
         emailTextField = view.findViewById(R.id.email);
         passwordTextField = view.findViewById(R.id.password);
         confirmPasswordTextField = view.findViewById(R.id.confirmPassword);
+        if (isGoogleAuth) {
+            passwordTextField.setVisibility(View.INVISIBLE);
+            confirmPasswordTextField.setVisibility(View.INVISIBLE);
+        }
 
         updateUI();
 
@@ -57,8 +63,8 @@ public class CreateAccountCredentialsFragment extends Fragment implements View.O
     public void onClick(View v) {
         String displayName = nameTextField.getEditText().getText().toString();
         String email = emailTextField.getEditText().getText().toString();
-        String password = passwordTextField.getEditText().getText().toString();
-        String confirmPassword = confirmPasswordTextField.getEditText().getText().toString();
+        String password = "";
+        String confirmPassword = "";
 
         if (displayName.isEmpty()) {
             nameTextField.setError("Required.");
@@ -74,27 +80,32 @@ public class CreateAccountCredentialsFragment extends Fragment implements View.O
             emailTextField.setError(null);
         }
 
-        if (password.isEmpty()) {
-            passwordTextField.setError("Required.");
-            return;
-        } else if (password.length() < 6) {
-            passwordTextField.setError("Password must be at least 6 characters.");
-            return;
-        } else {
-            passwordTextField.setError(null);
-        }
+        if (!isGoogleAuth) {
+            password = passwordTextField.getEditText().getText().toString();
+            confirmPassword = confirmPasswordTextField.getEditText().getText().toString();
 
-        if (confirmPassword.isEmpty()) {
-            confirmPasswordTextField.setError("Required.");
-            return;
-        } else if (confirmPassword.length() < 6) {
-            confirmPasswordTextField.setError("Password must be at least 6 characters.");
-            return;
-        } else if (!confirmPassword.equals(password)) {
-            confirmPasswordTextField.setError("Password mismatch.");
-            return;
-        } else {
-            confirmPasswordTextField.setError(null);
+            if (password.isEmpty()) {
+                passwordTextField.setError("Required.");
+                return;
+            } else if (password.length() < 6) {
+                passwordTextField.setError("Password must be at least 6 characters.");
+                return;
+            } else {
+                passwordTextField.setError(null);
+            }
+
+            if (confirmPassword.isEmpty()) {
+                confirmPasswordTextField.setError("Required.");
+                return;
+            } else if (confirmPassword.length() < 6) {
+                confirmPasswordTextField.setError("Password must be at least 6 characters.");
+                return;
+            } else if (!confirmPassword.equals(password)) {
+                confirmPasswordTextField.setError("Password mismatch.");
+                return;
+            } else {
+                confirmPasswordTextField.setError(null);
+            }
         }
 
         if (accountType.equals(Constants.ACCOUNT_TYPE_BUSINESS)) {

@@ -2,15 +2,20 @@ package com.example.coen268;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -130,6 +135,12 @@ public class RestaurantActivity extends AppCompatActivity {
         m_functions = FirebaseFunctions.getInstance();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        onBackPressed();
+        return true;
+    }
+
     private void getInfo(Intent i) {
         id = i.getStringExtra("id");
         image_url = i.getStringExtra("image");
@@ -156,36 +167,47 @@ public class RestaurantActivity extends AppCompatActivity {
         Glide.with(this).load(image_url).transform(new CenterCrop()).into(ivImage);
         mRatingBar.setRating((float) rating);
     }
-
-    public void ReserveSpot(View view) {
-        List<String> user_ids = m_reservation.getUser_ids();
-        String uID = m_firebaseUser.getUid();
-        String command = "";
-        if (IsCancelReserveBtn) {//remove user from real database
-            for (int index = 0; index < user_ids.size(); index++) {
-                if (user_ids.get(index).equals(uID)) {
-                    //uID is unique, so there should be only one in the list of reservation.getUser_ids()
-                    user_ids.remove(index);
-                    break;
-                }
-            }
-            command = "Cancel";
-        } else {
-            if (user_ids == null) {
-                user_ids = new ArrayList<>();
-                m_reservation.setUser_ids(user_ids);
-            }
-            user_ids.add(uID);
-            command = "Reserve";
-        }
+    public void ReserveSpot(View view){
+        final String uID = m_firebaseUser.getUid();
+        final String userName = m_firebaseUser.getDisplayName();
+        final List<String> user_ids = m_reservation.getUser_ids();
 
         reserveSpotButton.setText("Processing");
         reserveSpotButton.setEnabled(false);
 
-        m_databaseReservation.child(m_keyReservation).setValue(m_reservation);
+        if(IsCancelReserveBtn) {
+            AlertDialog dialog = new AlertDialog.Builder(RestaurantActivity.this)
+                    .setMessage("Are you sure you want to cancel the reservation?")
+                    .setTitle("Cancel Reservation")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            for(int index = 0; index < user_ids.size(); index++){
+                                if(user_ids.get(index).equals(uID)){
+                                    //uID is unique, so there should be only one in the list of reservation.getUser_ids()
+                                    user_ids.remove(index);
+                                    m_databaseReservation.child(m_keyReservation).setValue(m_reservation);
+                                    break;
+                                }
+                            }
+                            sendReserveNotificationAsync("Cancel", userName, m_reservation.getBusiness_id());
+                            Toast.makeText(RestaurantActivity.this, "Reservation cancelled successfully!", Toast.LENGTH_LONG);
+                        }
+                    })
+                    .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            reserveSpotButton.setText("Cancel Reservation");
+                            reserveSpotButton.setEnabled(true);
+                        }
+                    })
+                    .show();
+        } else {
+            if(user_ids == null){
+                m_reservation.setUser_ids(new ArrayList<String>(List.of(uID)));
+            }
 
-        String userName = m_firebaseUser.getDisplayName();
-        sendReserveNotificationAsync(command, userName, m_reservation.getBusiness_id());
+            m_databaseReservation.child(m_keyReservation).setValue(m_reservation);
+            sendReserveNotificationAsync("Reserve", userName, m_reservation.getBusiness_id());
+        }
     }
 
     @Override

@@ -161,11 +161,16 @@ public class SearchActivity extends Fragment implements LocationListener {
         if (location.isEmpty()) {
             getLocationPermission();
             if (mLocationPermissionsGranted) {
-                onLocationChanged(loc);
-                location = locationToCity();
-                yelpSearch(yelpService, searchEntry, location);
-                Toast.makeText(getContext(), "Using your current location for the search",
-                        Toast.LENGTH_SHORT).show();
+                if (loc != null) {
+                    onLocationChanged(loc);
+                    location = locationToCity();
+                    yelpSearch(yelpService, searchEntry, location);
+                    Toast.makeText(getContext(), "Using your current location for the search",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Unable to retrieve location",
+                            Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(getContext(), "Please input a location into the search field",
                         Toast.LENGTH_SHORT).show();
