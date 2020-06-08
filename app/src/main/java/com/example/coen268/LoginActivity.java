@@ -224,6 +224,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                                 // Send logged in uid to fcm service
                                 Intent intent = new Intent(FCMService.FCM_CMDCHANNEL);
+                                intent.putExtra("Command", FCMService.CMD_LOGIN);
                                 intent.putExtra("uid", user.getUid());
                                 sendBroadcast(intent);
                                 updateUI(user);
