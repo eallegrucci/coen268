@@ -182,7 +182,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
 
-            firebaseAuthWithGoogle(account.getIdToken());
+            firebaseAuthWithGoogle(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -193,10 +193,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     /**
      * Authenticate user ID token with Firebase
-     * @param idToken
+     * @param account
      */
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+    private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -210,6 +210,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 // TODO fix account creation for Google authentication
                                 Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
                                 intent.putExtra(Constants.KEY_ACCOUNT_TYPE, accountType);
+                                intent.putExtra(Constants.KEY_IS_GOOGLE_AUTH, true);
                                 startActivity(intent);
                             } else {
                                 FirebaseUser user = mAuth.getCurrentUser();
