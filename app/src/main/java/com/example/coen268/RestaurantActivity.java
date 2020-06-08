@@ -32,6 +32,7 @@ import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -202,7 +203,7 @@ public class RestaurantActivity extends AppCompatActivity {
                     .show();
         } else {
             if(user_ids == null){
-                m_reservation.setUser_ids(new ArrayList<String>(List.of(uID)));
+                m_reservation.setUser_ids(new ArrayList<>(Arrays.asList(uID)));
             }
 
             m_databaseReservation.child(m_keyReservation).setValue(m_reservation);
