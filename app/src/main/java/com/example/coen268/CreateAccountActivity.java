@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.coen268.user.BusinessOwner;
 import com.example.coen268.user.User;
@@ -33,6 +34,7 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
 
     private FirebaseAuth mAuth;
     private String accountType;
+    private boolean isGoogleAuth;
 
     private FirestoreService firestoreService;
     private boolean mBound;
@@ -47,6 +49,7 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
         mAuth = FirebaseAuth.getInstance();
 
         accountType = getIntent().getStringExtra(Constants.KEY_ACCOUNT_TYPE);
+        isGoogleAuth = getIntent().getBooleanExtra(Constants.KEY_IS_GOOGLE_AUTH, false);
         initializeDisplay();
     }
 
@@ -70,6 +73,7 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
 
         Bundle args = new Bundle();
         args.putString(Constants.KEY_ACCOUNT_TYPE, accountType);
+        args.putBoolean(Constants.KEY_IS_GOOGLE_AUTH, isGoogleAuth);
         accountCredentialsFragment.setArguments(args);
 
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, accountCredentialsFragment).commit();
@@ -94,15 +98,31 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
                                 if (task.getResult().size() != 0) {
-                                    Snackbar.make(findViewById(R.id.fragment_container), "Failed to create account. Account already exists.", Snackbar.LENGTH_LONG).show();
-                                    Log.d(TAG, "An account for " + user.getDisplayName() + " already exists");
+                                    if (isGoogleAuth) {
+                                        mAuth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "User account deleted.");
+
+                                                    Toast.makeText(CreateAccountActivity.this, "Failed to create account. Account already exists.", Toast.LENGTH_LONG).show();
+                                                    Log.d(TAG, "An account for " + user.getDisplayName() + " already exists");
+
+                                                    finish();
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        Toast.makeText(CreateAccountActivity.this, "Failed to create account. Account already exists.", Toast.LENGTH_LONG).show();
+                                        Log.d(TAG, "An account for " + user.getDisplayName() + " already exists");
+
+                                        finish();
+                                    }
                                 } else {
                                     createAccountWithEmailPassword(user);
                                 }
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                }
                             } else {
+                                Snackbar.make(findViewById(R.id.fragment_container), "Error retrieving documents.", Snackbar.LENGTH_LONG);
                                 Log.d(TAG, "Error getting documents: ", task.getException());
                             }
                         }
@@ -113,22 +133,26 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
     }
 
     private void createAccountWithEmailPassword(final User user) {
-        mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
-                .addOnCompleteListener(CreateAccountActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
-                            updateProfile(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.fragment_container), "Failed to create account.", Snackbar.LENGTH_LONG).show();
-                            updateUI(null, null);
+        if (isGoogleAuth) {
+            updateProfile(user);
+        } else {
+            mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
+                    .addOnCompleteListener(CreateAccountActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d(TAG, "createUserWithEmail:success");
+                                updateProfile(user);
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                Snackbar.make(findViewById(R.id.fragment_container), "Failed to create account.", Snackbar.LENGTH_LONG).show();
+                                updateUI(null, null);
+                            }
                         }
-                    }
-                });
+                    });
+        }
         // Register a document in real time database for business reservation info
         if (user.getAccountType().equals(Constants.ACCOUNT_TYPE_BUSINESS)) {
             DatabaseReference databaseReservation = FirebaseDatabase.getInstance().getReference("Reservations");
