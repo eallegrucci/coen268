@@ -3,14 +3,20 @@ package com.example.coen268;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.coen268.user.BusinessOwner;
+import com.example.coen268.user.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -26,12 +32,16 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 1;
 
     private String accountType = Constants.ACCOUNT_TYPE_CUSTOMER;
+
+    private FirestoreService firestoreService;
+    private boolean mBound;
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
@@ -43,6 +53,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        getSupportActionBar().setTitle(getResources().getString(R.string.title_activity_login));
 
         // Get account type from Start activity
         accountType = getIntent().getStringExtra(Constants.KEY_ACCOUNT_TYPE);
@@ -77,9 +89,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onStart() {
         super.onStart();
-        // Check if a user is already logged in.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+
+        // Bind to FirestoreService
+        Intent intent = new Intent(this, FirestoreService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(connection);
+        mBound = false;
     }
 
     @Override
@@ -180,6 +200,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     /**
      * Authenticate user ID token with Firebase
+     *
      * @param idToken
      */
     private void firebaseAuthWithGoogle(String idToken) {
@@ -191,14 +212,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
 
-                            // Send logged in uid to fcm service
-                            Intent intent = new Intent(FCMService.FCM_CMDCHANNEL);
-                            intent.putExtra("uid", user.getUid());
-                            sendBroadcast(intent);
+                            boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
+                            if (isNew) {
+                                // TODO fix account creation for Google authentication - and sendBroadCast for FCM
+                                Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
+                                intent.putExtra(Constants.KEY_ACCOUNT_TYPE, accountType);
+                                startActivity(intent);
+                            } else {
+                                FirebaseUser user = mAuth.getCurrentUser();
 
-                            updateUI(user);
+                                // Send logged in uid to fcm service
+                                Intent intent = new Intent(FCMService.FCM_CMDCHANNEL);
+                                intent.putExtra("uid", user.getUid());
+                                sendBroadcast(intent);
+                                updateUI(user);
+                            }
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -209,10 +238,76 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 });
     }
 
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+    private void updateUI(FirebaseUser fbUser) {
+        if (fbUser != null) {
+            firestoreService.getDocument("users", fbUser.getUid()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                            User user = null;
+                            String id = (String) document.getData().get("id");
+                            String type = (String) document.getData().get("type");
+                            String name = (String) document.getData().get("name");
+                            String email = (String) document.getData().get("email");
+                            if (type.equals(Constants.ACCOUNT_TYPE_CUSTOMER)) {
+                                user = new User.UserBuilder(type)
+                                        .setId(id)
+                                        .setDisplayName(name)
+                                        .setEmail(email)
+                                        .build();
+                            } else if (type.equals(Constants.ACCOUNT_TYPE_BUSINESS)) {
+                                String businessId = (String) document.getData().get("business_id");
+                                user = new BusinessOwner.BusinessOwnerBuilder(type)
+                                        .setId(id)
+                                        .setDisplayName(name)
+                                        .setEmail(email)
+                                        .setBusinessId(businessId)
+                                        .build();
+                            } else {
+                                Snackbar.make(findViewById(R.id.emailPwdSignInButton), "User is invalid.", Snackbar.LENGTH_LONG).show();
+                            }
+
+                            if (user != null) {
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.putExtra(Constants.KEY_USER, user);
+                                startActivity(intent);
+                            }
+                        } else {
+                            Log.d(TAG, "unable to find document");
+                            Snackbar.make(findViewById(R.id.emailPwdSignInButton), "User not found.", Snackbar.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                        Snackbar.make(findViewById(R.id.emailPwdSignInButton), "Unable to retrieve user.", Snackbar.LENGTH_LONG).show();
+                    }
+                }
+            });
         }
     }
+
+    private void onServiceAttached() {
+        // Check if a user is already logged in.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
+    }
+
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            FirestoreService.FirestoreBinder binder = (FirestoreService.FirestoreBinder) service;
+            firestoreService = binder.getService();
+            mBound = true;
+            onServiceAttached();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 }

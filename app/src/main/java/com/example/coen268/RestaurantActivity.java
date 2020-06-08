@@ -34,15 +34,14 @@ import java.util.Map;
 public class RestaurantActivity extends AppCompatActivity {
     private String image_url, name, phone, price, street, address, distance, hours, id;
     private double rating, reviewCount;
-    private static final String TAG ="database ERROR";
+    private static final String TAG = "database ERROR";
     Button reserveSpotButton, returnBackButton;
-    TextView tvName, tvCount, tvPrice, tvDistance, tvPhone, tvStreet, tvAddress,restaurantNumOpenSpots;
+    TextView tvName, tvCount, tvPrice, tvDistance, tvPhone, tvStreet, tvAddress, restaurantNumOpenSpots;
     ImageView ivImage;
     RatingBar mRatingBar;
     DatabaseReference m_databaseReservation;
     private FirebaseAuth m_Auth;
     FirebaseUser m_firebaseUser;
-    String uID;
     Boolean IsCancelReserveBtn;
     Reservation m_reservation;
     String m_keyReservation;
@@ -57,7 +56,6 @@ public class RestaurantActivity extends AppCompatActivity {
 
         m_Auth = FirebaseAuth.getInstance();
         m_firebaseUser = m_Auth.getCurrentUser();
-        uID = m_firebaseUser.getUid();
 
         Intent i = getIntent();
         getInfo(i);
@@ -65,22 +63,22 @@ public class RestaurantActivity extends AppCompatActivity {
         m_realtimeDbListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds:dataSnapshot.getChildren()){
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     m_reservation = ds.getValue(Reservation.class);
-                    if(m_reservation.getBusiness_id().equals(id)){
+                    if (m_reservation.getBusiness_id().equals(id)) {
                         m_keyReservation = ds.getKey();
                         reserveSpotButton.setEnabled(true);
                         List<String> user_ids = m_reservation.getUser_ids();
 
                         Integer quotaLeft =
-                                Integer.parseInt(m_reservation.getQuota()) - (user_ids == null? 0:user_ids.size());
+                                Integer.parseInt(m_reservation.getQuota()) - (user_ids == null ? 0 : user_ids.size());
                         restaurantNumOpenSpots.setText(quotaLeft.toString());
 
+                        String uID = m_firebaseUser.getUid();
                         Boolean hasReserveSpot = false;
-
-                        if(user_ids != null){
-                            for(int id_index = 0; id_index < user_ids.size(); id_index ++){
-                                if(user_ids.get(id_index).equals(uID)){
+                        if (user_ids != null) {
+                            for (int id_index = 0; id_index < user_ids.size(); id_index++) {
+                                if (user_ids.get(id_index).equals(uID)) {
                                     hasReserveSpot = true;
                                     IsCancelReserveBtn = true;
                                     reserveSpotButton.setText("Cancel Reservation");
@@ -90,12 +88,11 @@ public class RestaurantActivity extends AppCompatActivity {
 
                         reserveSpotButton.setEnabled(true);
 
-                        if(hasReserveSpot == false){
-                            if(quotaLeft == 0){
+                        if (hasReserveSpot == false) {
+                            if (quotaLeft == 0) {
                                 reserveSpotButton.setEnabled(false);
                                 reserveSpotButton.setText("Full");
-                            }
-                            else{
+                            } else {
                                 IsCancelReserveBtn = false;
                                 reserveSpotButton.setText("Reserve Spot");
                             }
@@ -106,6 +103,7 @@ public class RestaurantActivity extends AppCompatActivity {
                 }
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
@@ -114,7 +112,7 @@ public class RestaurantActivity extends AppCompatActivity {
 
         reserveSpotButton = (Button) findViewById(R.id.reserveButton);
         returnBackButton = (Button) findViewById(R.id.returnBackButton);
-        restaurantNumOpenSpots = (TextView)findViewById(R.id.restaurantNumOpenSpots);
+        restaurantNumOpenSpots = (TextView) findViewById(R.id.restaurantNumOpenSpots);
         tvName = (TextView) findViewById(R.id.restaurantName);
         tvCount = (TextView) findViewById(R.id.restaurantRevCount);
         tvPrice = (TextView) findViewById(R.id.restaurantPrice);
@@ -158,20 +156,22 @@ public class RestaurantActivity extends AppCompatActivity {
         Glide.with(this).load(image_url).transform(new CenterCrop()).into(ivImage);
         mRatingBar.setRating((float) rating);
     }
-    public void ReserveSpot(View view){
-        List<String>user_ids = m_reservation.getUser_ids();
+
+    public void ReserveSpot(View view) {
+        List<String> user_ids = m_reservation.getUser_ids();
+        String uID = m_firebaseUser.getUid();
         String command = "";
-        if (IsCancelReserveBtn){//remove user from real database
-           for(int index = 0; index < user_ids.size(); index++){
-               if(user_ids.get(index).equals(uID)){
-                   //uID is unique, so there should be only one in the list of reservation.getUser_ids()
-                   user_ids.remove(index);
-                   break;
-               }
-           }
-           command = "Cancel";
-        } else{
-            if(user_ids == null) {
+        if (IsCancelReserveBtn) {//remove user from real database
+            for (int index = 0; index < user_ids.size(); index++) {
+                if (user_ids.get(index).equals(uID)) {
+                    //uID is unique, so there should be only one in the list of reservation.getUser_ids()
+                    user_ids.remove(index);
+                    break;
+                }
+            }
+            command = "Cancel";
+        } else {
+            if (user_ids == null) {
                 user_ids = new ArrayList<>();
                 m_reservation.setUser_ids(user_ids);
             }
@@ -184,7 +184,8 @@ public class RestaurantActivity extends AppCompatActivity {
 
         m_databaseReservation.child(m_keyReservation).setValue(m_reservation);
 
-        sendReserveNotificationAsync(command, uID, m_reservation.getBusiness_id());
+        String userName = m_firebaseUser.getDisplayName();
+        sendReserveNotificationAsync(command, userName, m_reservation.getBusiness_id());
     }
 
     @Override
@@ -199,20 +200,29 @@ public class RestaurantActivity extends AppCompatActivity {
         finish();
     }
 
-    public Task<String> sendReserveNotificationAsync(String command, String clientUid, String businessId) {
+    public Task<Boolean> sendReserveNotificationAsync(String command, String clientUsername, String businessId) {
         Map<String, Object> data = new HashMap<>();
-        data.put("clientUid", clientUid);
+        data.put("clientUsername", clientUsername);
         data.put("businessId", businessId);
         data.put("command", command);
 
         return m_functions
                 .getHttpsCallable("sendClientReserveCancelNotification")
                 .call(data)
-                .continueWith(new Continuation<HttpsCallableResult, String>() {
+                .continueWith(new Continuation<HttpsCallableResult, Boolean>() {
                     @Override
-                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        String result = (String) task.getResult().getData();
-                        return result;
+                    public Boolean then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        HttpsCallableResult res = task.getResult();
+                        try {
+                            HashMap<String, String> result = (HashMap<String, String>)res.getData();
+                            if (result.get("result").equals("Success")) {
+                                Log.i(TAG, "Message successfully sent!");
+                                return true;
+                            }
+                        } catch (Exception e){
+                            Log.e(TAG, e.getLocalizedMessage());
+                        }
+                        return false;
                     }
                 });
     }

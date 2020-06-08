@@ -1,13 +1,20 @@
 package com.example.coen268;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -64,6 +71,10 @@ public class FCMService extends FirebaseMessagingService {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "eraseLoggedInUser succeeded");
+
+                        // Tell Account to continue logout process
+                        Intent intent = new Intent(Account.LOGOUT_RECEIVER);
+                        sendBroadcast(intent);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -103,6 +114,14 @@ public class FCMService extends FirebaseMessagingService {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (m_commandReceiver != null) {
+            unregisterReceiver(m_commandReceiver);
+        }
+    }
+
+    @Override
     public void onNewToken(String token) {
         Log.d(TAG, "Refreshed token: " + token);
 
@@ -121,9 +140,6 @@ public class FCMService extends FirebaseMessagingService {
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-
         }
-//        System.out.println(remoteMessage.getNotification().getBody());
-
     }
 }

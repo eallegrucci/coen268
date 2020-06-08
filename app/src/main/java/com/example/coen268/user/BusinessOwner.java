@@ -1,7 +1,46 @@
 package com.example.coen268.user;
 
-public class BusinessOwner extends User {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class BusinessOwner extends User implements Parcelable {
     protected String businessId;
+
+    protected BusinessOwner(Parcel in) {
+        id = in.readString();
+        type = in.readString();
+        displayName = in.readString();
+        email = in.readString();
+        password = in.readString();
+        businessId = in.readString();
+    }
+
+    public static final Creator<BusinessOwner> CREATOR = new Creator<BusinessOwner>() {
+        @Override
+        public BusinessOwner createFromParcel(Parcel in) {
+            return new BusinessOwner(in);
+        }
+
+        @Override
+        public BusinessOwner[] newArray(int size) {
+            return new BusinessOwner[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(id);
+        out.writeString(type);
+        out.writeString(displayName);
+        out.writeString(email);
+        out.writeString(password);
+        out.writeString(businessId);
+    }
 
     public static class BusinessOwnerBuilder {
         private String id;
