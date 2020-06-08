@@ -108,11 +108,6 @@ public class CreateAccountActivity extends AppCompatActivity implements User.OnC
                                                     Toast.makeText(CreateAccountActivity.this, "Failed to create account. Account already exists.", Toast.LENGTH_LONG).show();
                                                     Log.d(TAG, "An account for " + user.getDisplayName() + " already exists");
 
-                                                    Intent intent = new Intent(FCMService.FCM_CMDCHANNEL);
-                                                    intent.putExtra("Command", FCMService.CMD_LOGIN);
-                                                    intent.putExtra("uid", user.getId());
-                                                    sendBroadcast(intent);
-
                                                     finish();
                                                 }
                                             }
