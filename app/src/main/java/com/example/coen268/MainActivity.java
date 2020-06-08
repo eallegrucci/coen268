@@ -77,7 +77,8 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             case R.id.myReservationsItem:
                                 Log.i("onNavigationItemSelected", "reservation fragment selected");
-                                selectedFrag = new BusinessReservationFragment(firestoreService);
+                                selectedFrag = new CustomerReservationFragment(firestoreService);
+                                getSupportActionBar().setTitle(getResources().getString(R.string.title_reservations));
                                 break;
                             case R.id.businessHomeItem:
                                 Log.i("onNavigationItemSelected", "business home fragment selected");
